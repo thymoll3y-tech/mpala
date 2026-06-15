@@ -13,7 +13,7 @@ exports.handler = async (event) => {
   return new Promise((resolve, reject) => {
     const options = {
       hostname: 'www.jblanked.com',
-      path: '/news/api/forex-factory/calendar/week/?currency=USD',
+      path: `/news/api/forex-factory/calendar/range/?currency=USD&start=${new Date().toISOString().slice(0,10)}&end=${new Date(Date.now()+7*86400000).toISOString().slice(0,10)}`,
       method: 'GET',
       headers: {
         'Authorization': `Api-Key ${apiKey}`
