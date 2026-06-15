@@ -5282,21 +5282,25 @@ function renderWeeklyReviews(){
 function renderJournalSummary(){
   var el=document.getElementById('journal-summary');if(!el)return;
 
-  // Last trade
-  var trades=[];
-  try{trades=JSON.parse(localStorage.getItem('cmd_trade_journal')||'[]');}catch(e){}
-  var last=trades[0];
-  var lastLabel, lastVal, lastColor;
-  if(last){
-    var net=parseFloat(last.result)||0;
-    lastColor = last.outcome==='Win' ? 'var(--sage)' : last.outcome==='Loss' ? 'var(--rose)' : 'var(--gold)';
-    lastVal = (net<0?'-$':'$')+Math.abs(net).toLocaleString('en-US');
-    lastLabel = (last.direction||'').toUpperCase()+' &middot; '+(last.outcome||'').toUpperCase();
-  } else {
-    lastVal = '&mdash;';
-    lastColor = 'var(--text3)';
-    lastLabel = 'NO TRADES YET';
-  }
+      // Today's trade (must be logged TODAY, not just "most recent ever")
+      var trades=[];
+      try{trades=JSON.parse(localStorage.getItem('cmd_trade_journal')||'[]');}catch(e){}
+      var now=new Date();
+      var todayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
+      var todayTrades=trades.filter(function(t){return t&&t.id>=todayStart;});
+      var last=todayTrades[0];
+      var lastLabel, lastVal, lastColor;
+      if(last){
+        var net=parseFloat(last.result)||0;
+        lastColor = last.outcome==='Win' ? 'var(--sage)' : last.outcome==='Loss' ? 'var(--rose)' : 'var(--gold)';
+        lastVal = (net<0?'-$':'$')+Math.abs(net).toLocaleString('en-US');
+        lastLabel = (last.direction||'').toUpperCase()+' &middot; '+(last.outcome||'').toUpperCase();
+      } else {
+        lastVal = '&mdash;';
+        lastColor = 'var(--text3)';
+        lastLabel = 'NOT LOGGED';
+      }
+
 
   // Clean streak (20 good trades tracker)
   var dots=[];
