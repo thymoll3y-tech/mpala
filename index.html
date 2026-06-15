@@ -9595,7 +9595,35 @@ function tapeFmtValue(v){
 }
 
 // Map a raw JBlanked event row into Tape's internal shape
+function tapeMergeWithSample(liveEvents){
+  const liveDates = new Set(liveEvents.map(e => e.dateStr));
+  const sampleFill = tapeSampleAsEvents().filter(e => !liveDates.has(e.dateStr));
+  return [...liveEvents, ...sampleFill];
+}
+
+
+
+
+function tapeMergeWithSample(liveEvents){
+  const liveDates = new Set(liveEvents.map(e => e.dateStr));
+  const sampleFill = tapeSampleAsEvents().filter(e => !liveDates.has(e.dateStr));
+  return [...liveEvents, ...sampleFill];
+}
+
+
+
+
+function tapeMergeWithSample(liveEvents){
+  const liveDates = new Set(liveEvents.map(e => e.dateStr));
+  const sampleFill = tapeSampleAsEvents().filter(e => !liveDates.has(e.dateStr));
+  return [...liveEvents, ...sampleFill];
+}
+
+
+
+
 function tapeMapJBEvent(row){
+
   const et = tapeJBToET(row.Date);
   if(!et) return null;
   return {
@@ -9655,7 +9683,7 @@ async function tapeLoadEvents(){
     if(events.length === 0) throw new Error('No USD events returned');
 
     tapeWriteCache(events);
-    return { events, source:'live', fetchedAt: Date.now() };
+    return { events: tapeMergeWithSample(events), source:'live', fetchedAt: Date.now() };
   }catch(err){
     if(cache){
       return { events: cache.events, source:'cache', fetchedAt: cache.fetchedAt, error: err };
