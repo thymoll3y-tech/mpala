@@ -2822,3 +2822,1308 @@ body.phone-mode .topbar { padding-top: calc(8px + 1.1cm) !important; }
       <div class="pc-dot" id="pcd-3"></div>
       <div class="pc-dot" id="pcd-4"></div>
       <div class="pc-dot" id="pcd-5"></div>
+    </div>
+    <div id="auth-error" style="display:none;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--rose);margin-top:-36px;margin-bottom:20px">INCORRECT PASSCODE</div>
+  </div>
+  <div id="pc-keypad" style="padding-bottom:calc(env(safe-area-inset-bottom,20px)+8px);width:100%">
+    <div class="pc-row">
+      <button class="pc-key" onclick="pcTap('1')"><span class="pc-num">1</span></button>
+      <button class="pc-key" onclick="pcTap('2')"><span class="pc-num">2</span><span class="pc-sub">ABC</span></button>
+      <button class="pc-key" onclick="pcTap('3')"><span class="pc-num">3</span><span class="pc-sub">DEF</span></button>
+    </div>
+    <div class="pc-row">
+      <button class="pc-key" onclick="pcTap('4')"><span class="pc-num">4</span><span class="pc-sub">GHI</span></button>
+      <button class="pc-key" onclick="pcTap('5')"><span class="pc-num">5</span><span class="pc-sub">JKL</span></button>
+      <button class="pc-key" onclick="pcTap('6')"><span class="pc-num">6</span><span class="pc-sub">MNO</span></button>
+    </div>
+    <div class="pc-row">
+      <button class="pc-key" onclick="pcTap('7')"><span class="pc-num">7</span><span class="pc-sub">PQRS</span></button>
+      <button class="pc-key" onclick="pcTap('8')"><span class="pc-num">8</span><span class="pc-sub">TUV</span></button>
+      <button class="pc-key" onclick="pcTap('9')"><span class="pc-num">9</span><span class="pc-sub">WXYZ</span></button>
+    </div>
+    <div class="pc-row">
+      <button class="pc-key pc-key-bio" id="pc-bio-btn" onclick="pcBiometric()" style="visibility:hidden">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a5 5 0 0 1 5 5v3"/><path d="M7 7a5 5 0 0 1 10 0"/><path d="M3 12c0-4.97 4.03-9 9-9"/><path d="M21 12c0 4.97-4.03 9-9 9"/><path d="M12 12v.01"/><path d="M9 15a3 3 0 0 0 6 0v-3"/><path d="M12 7v5"/></svg>
+      </button>
+      <button class="pc-key" onclick="pcTap('0')"><span class="pc-num">0</span></button>
+      <button class="pc-key pc-key-del" onclick="pcDel()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Password mode — completely separate layout -->
+  <div id="pw-auth-view" style="display:none;flex-direction:column;align-items:center;position:absolute;top:0;left:0;right:0;bottom:0;padding:0 28px">
+    <!-- Spacer pushes content to roughly upper-center -->
+    <div style="flex:2"></div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:28vw;color:var(--gold);letter-spacing:4px;line-height:1;width:100%;text-align:center;margin-bottom:40px">MOTION</div>
+    <div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:340px">
+      <input id="pw-auth-input" type="password" autocomplete="current-password" placeholder="Password"
+        style="width:100%;padding:18px 20px;border-radius:14px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-family:var(--font-mono);font-size:16px;letter-spacing:4px;text-align:center;outline:none;-webkit-appearance:none;box-sizing:border-box;transition:border-color .2s"
+        onkeydown="if(event.key==='Enter')pwAuthSubmit()"/>
+      <button onclick="pwAuthSubmit()" style="width:100%;padding:18px;border-radius:14px;background:var(--gold-dim);border:1.5px solid var(--gold);color:var(--gold);font-family:var(--font-mono);font-size:11px;letter-spacing:4px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:all .2s">ENTER</button>
+      <div id="pw-auth-error" style="display:none;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--rose);text-align:center;margin-top:4px">INCORRECT PASSWORD</div>
+    </div>
+    <!-- Bottom spacer + footer -->
+    <div style="flex:3"></div>
+    <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:var(--text3);padding-bottom:calc(env(safe-area-inset-bottom,20px)+20px)">MOTION &middot; 2026</div>
+  </div>
+</div>
+
+<!-- ═══ CHANGE PASSWORD OVERLAY ═══ -->
+<div id="change-pw-screen" style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:1400;background:var(--void);display:flex;flex-direction:column;align-items:center;overflow:hidden;">
+  <div style="height:calc(0.275cm + env(safe-area-inset-top,0px));background:var(--void);flex-shrink:0;width:100%"></div>
+  <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--gold-dim);background:var(--void);backdrop-filter:blur(24px);flex-shrink:0;position:relative;width:100%">
+    <button onclick="closeChangePassword()" style="background:none;border:none;color:var(--gold);font-family:var(--font-mono);font-size:11px;letter-spacing:1px;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:5px;-webkit-tap-highlight-color:transparent;flex-shrink:0;z-index:1">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back
+    </button>
+    <div style="position:absolute;left:0;right:0;text-align:center;font-family:var(--font-mono);font-size:11px;letter-spacing:3px;color:var(--text);pointer-events:none">CHANGE PASSWORD</div>
+  </div>
+  <div style="flex:1;width:100%;max-width:340px;padding:32px 20px;display:flex;flex-direction:column;gap:14px">
+    <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3)">CURRENT PASSWORD</div>
+    <input id="cpw-current" type="password" autocomplete="current-password" placeholder="Current password" style="width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-family:var(--font-mono);font-size:16px;outline:none;-webkit-appearance:none"/>
+    <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-top:4px">NEW PASSWORD</div>
+    <input id="cpw-new" type="password" autocomplete="new-password" placeholder="New password" style="width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-family:var(--font-mono);font-size:16px;outline:none;-webkit-appearance:none"/>
+    <input id="cpw-confirm" type="password" autocomplete="new-password" placeholder="Confirm new password" style="width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-family:var(--font-mono);font-size:16px;outline:none;-webkit-appearance:none" onkeydown="if(event.key==='Enter')cpwSubmit()"/>
+    <div id="cpw-error" style="display:none;font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;color:var(--rose)"></div>
+    <button onclick="cpwSubmit()" style="margin-top:8px;width:100%;padding:16px;border-radius:14px;background:var(--gold-dim);border:1.5px solid var(--gold);color:var(--gold);font-family:var(--font-mono);font-size:11px;letter-spacing:3px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:all .2s">SAVE PASSWORD</button>
+  </div>
+</div>
+
+<!-- ═══ ACCOUNT / SETTINGS FULL-SCREEN PAGE ═══ -->
+<div id="account-page" style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:1200;background:var(--obsidian);display:flex;flex-direction:column;overflow:hidden;">
+  <div style="height:calc(0.275cm + env(safe-area-inset-top,0px));background:var(--obsidian);flex-shrink:0"></div>
+  <div id="account-header" style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--gold-dim);background:var(--obsidian);backdrop-filter:blur(24px);flex-shrink:0;position:relative">
+    <button onclick="closeAccountPage()" style="background:none;border:none;color:var(--gold);font-family:var(--font-mono);font-size:11px;letter-spacing:1px;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:5px;-webkit-tap-highlight-color:transparent;flex-shrink:0;z-index:1">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back
+    </button>
+    <div style="position:absolute;left:0;right:0;text-align:center;font-family:var(--font-mono);font-size:11px;letter-spacing:3px;color:var(--text);pointer-events:none">SETTINGS</div>
+  </div>
+  <div id="account-body" style="flex:1;overflow-y:auto;padding:24px 20px 40px;overscroll-behavior:contain;background:var(--obsidian)">
+
+    <!-- Appearance -->
+    <div class="acct-section">
+      <div class="acct-section-label">APPEARANCE</div>
+      <div class="acct-card">
+        <div class="acct-row" style="cursor:default">
+          <span class="acct-row-label">Colour Palette</span>
+        </div>
+        <div class="palette-grid" id="acct-palette-grid" style="padding:8px 16px 16px"></div>
+      </div>
+    </div>
+
+    <!-- Security -->
+    <div class="acct-section">
+      <div class="acct-section-label">SECURITY</div>
+      <div class="acct-card" id="lock-mode-card">
+        <div class="acct-row" style="cursor:default;padding-bottom:8px">
+          <span class="acct-row-label">Lock Method</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0;padding:0 12px 12px">
+          <button class="lock-opt" id="lock-opt-none" onclick="setLockMode('none')">
+            <div class="lock-opt-radio" id="lor-none"></div>
+            <div>
+              <div class="lock-opt-title">None</div>
+              <div class="lock-opt-sub">App opens directly, no lock</div>
+            </div>
+          </button>
+          <button class="lock-opt" id="lock-opt-passcode" onclick="setLockMode('passcode')">
+            <div class="lock-opt-radio" id="lor-passcode"></div>
+            <div>
+              <div class="lock-opt-title">Passcode</div>
+              <div class="lock-opt-sub">6-digit code on every open</div>
+            </div>
+          </button>
+          <button class="lock-opt" id="lock-opt-password" onclick="setLockMode('password')">
+            <div class="lock-opt-radio" id="lor-password"></div>
+            <div>
+              <div class="lock-opt-title">Password</div>
+              <div class="lock-opt-sub">Text password, same as before</div>
+            </div>
+          </button>
+          <button class="lock-opt" id="lock-opt-biometric" onclick="setLockMode('biometric')" style="display:none">
+            <div class="lock-opt-radio" id="lor-biometric"></div>
+            <div>
+              <div class="lock-opt-title">Face ID</div>
+              <div class="lock-opt-sub">Biometric with passcode fallback</div>
+            </div>
+          </button>
+        </div>
+        <div id="acct-change-pc-wrap" style="display:none">
+          <div class="acct-divider"></div>
+          <button class="acct-row" id="acct-change-pc-btn" onclick="showChangePasscode()">
+            <span class="acct-row-label">Change Passcode</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <div class="acct-divider" id="acct-change-pw-divider" style="display:none"></div>
+          <button class="acct-row" id="acct-change-pw-btn" onclick="showChangePassword()" style="display:none">
+            <span class="acct-row-label">Change Password</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data -->
+    <div class="acct-section">
+      <div class="acct-section-label">DATA</div>
+      <div class="acct-card">
+        <button class="acct-row" onclick="exportData()">
+          <span class="acct-row-label">Export Save File</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.85;color:var(--gold)"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </button>
+        <div class="acct-divider"></div>
+        <button class="acct-row" onclick="triggerImport()">
+          <span class="acct-row-label">Import Save File</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.85;color:var(--gold)"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <input type="file" id="import-file-input" accept="application/json,.json" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;left:-9999px" onchange="handleImportFile(event)"/>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--text3);margin-top:8px;padding:0 4px;line-height:1.5">Export saves all your trades, plans, notes, MDP progress, returns and money to a file. Import replaces current data with a save file. Passcodes are never included.</div>
+    </div>
+
+    <!-- Danger -->
+    <div class="acct-section">
+      <div class="acct-card">
+        <button class="acct-row" style="color:var(--rose)" onclick="logOut()">
+          <span class="acct-row-label" style="color:var(--rose)">Log Out</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Change passcode overlay (inside account page layer) -->
+<div id="change-pc-screen" style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:1300;background:var(--void);display:flex;flex-direction:column;align-items:center;overflow:hidden;">
+  <div style="height:calc(0.275cm + env(safe-area-inset-top,0px));background:var(--void);flex-shrink:0;width:100%"></div>
+  <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--gold-dim);background:var(--void);backdrop-filter:blur(24px);flex-shrink:0;position:relative;width:100%">
+    <button onclick="closeChangePasscode()" style="background:none;border:none;color:var(--gold);font-family:var(--font-mono);font-size:11px;letter-spacing:1px;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:5px;-webkit-tap-highlight-color:transparent;flex-shrink:0;z-index:1">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back
+    </button>
+    <div style="position:absolute;left:0;right:0;text-align:center;font-family:var(--font-mono);font-size:11px;letter-spacing:3px;color:var(--text);pointer-events:none">CHANGE PASSCODE</div>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%">
+    <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:3px;color:var(--text3);margin-bottom:28px" id="cpc-label">ENTER CURRENT PASSCODE</div>
+    <div id="cpc-dots" style="display:flex;gap:18px;margin-bottom:0">
+      <div class="pc-dot" id="cpcd-0"></div><div class="pc-dot" id="cpcd-1"></div>
+      <div class="pc-dot" id="cpcd-2"></div><div class="pc-dot" id="cpcd-3"></div>
+      <div class="pc-dot" id="cpcd-4"></div><div class="pc-dot" id="cpcd-5"></div>
+    </div>
+    <div id="cpc-error" style="display:none;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--rose);margin-top:16px">INCORRECT</div>
+  </div>
+  <div id="cpc-keypad" style="width:100%">
+    <div class="pc-row"><button class="pc-key" onclick="cpcTap('1')"><span class="pc-num">1</span></button><button class="pc-key" onclick="cpcTap('2')"><span class="pc-num">2</span><span class="pc-sub">ABC</span></button><button class="pc-key" onclick="cpcTap('3')"><span class="pc-num">3</span><span class="pc-sub">DEF</span></button></div>
+    <div class="pc-row"><button class="pc-key" onclick="cpcTap('4')"><span class="pc-num">4</span><span class="pc-sub">GHI</span></button><button class="pc-key" onclick="cpcTap('5')"><span class="pc-num">5</span><span class="pc-sub">JKL</span></button><button class="pc-key" onclick="cpcTap('6')"><span class="pc-num">6</span><span class="pc-sub">MNO</span></button></div>
+    <div class="pc-row"><button class="pc-key" onclick="cpcTap('7')"><span class="pc-num">7</span><span class="pc-sub">PQRS</span></button><button class="pc-key" onclick="cpcTap('8')"><span class="pc-num">8</span><span class="pc-sub">TUV</span></button><button class="pc-key" onclick="cpcTap('9')"><span class="pc-num">9</span><span class="pc-sub">WXYZ</span></button></div>
+    <div class="pc-row"><button class="pc-key" style="visibility:hidden"></button><button class="pc-key" onclick="cpcTap('0')"><span class="pc-num">0</span></button><button class="pc-key pc-key-del" onclick="cpcDel()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg></button></div>
+  </div>
+  <div style="height:calc(env(safe-area-inset-bottom)+16px)"></div>
+</div>
+
+
+
+  <!-- TRADE JOURNAL -->
+<!-- ═══════════════════════════════════════
+     MAIN DASHBOARD
+═══════════════════════════════════════ -->
+<div id="kbd-hint" style="display:none;position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--border2);color:var(--text3);font-family:var(--font-mono);font-size:9px;letter-spacing:1px;padding:6px 16px;border-radius:20px;z-index:500;pointer-events:none">D=Daily &middot; M=MDP &middot; S=Scaling &middot; I=Invest &middot; N=Ideas &middot; H=Home</div>
+<div class="dashboard" style="visibility:hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="brand-name">MPALA</div>
+        <button id="sidebarCollapseBtn" onclick="toggleSidebarMode()" title="Toggle fullscreen" style="background:none;border:1px solid var(--border2);color:var(--text3);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;">&#x21E4;</button>
+      </div>
+      <div class="brand-sub">Private Dashboard</div>
+    </div>
+
+    <!-- NAV -->
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <button class="nav-btn active" id="nb-overview" onclick="switchView('overview',this)">
+          <span class="nav-icon">◈</span>Dashboard
+        </button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">My Plans</div>
+        <button class="nav-btn" id="nb-daily" onclick="switchView('daily',this)">
+          <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>Daily
+        </button>
+        <button class="nav-btn" id="nb-mdp" onclick="switchView('mdp',this)">
+          <span class="nav-icon" style="background:var(--rose-dim);border-color:var(--rose-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5l8 8 8-8v14"/></svg></span>MDP
+        </button>
+        <button class="nav-btn" id="nb-scaling" onclick="switchView('scaling',this)">
+          <span class="nav-icon" style="background:var(--sage-dim);border-color:var(--sage-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span>Scaling Plan
+        </button>
+        <button class="nav-btn" id="nb-invest" onclick="switchView('invest',this)">
+          <span class="nav-icon" style="background:var(--azure-dim);border-color:var(--azure-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V12"/><path d="M12 12C12 7 7 3 2 4c0 5 4 9 10 8"/><path d="M12 12c0-5 5-9 10-8-1 5-5 8-10 8"/></svg></span>Investments
+        </button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Custom</div>
+        <button class="nav-btn" id="nb-ideas" onclick="switchView('ideas',this)">
+          <span class="nav-icon" style="background:var(--gold-dim);border-color:var(--gold-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21h6"/><path d="M12 3a6 6 0 0 1 6 6c0 2.5-1.5 4.5-3 5.5V17H9v-2.5C7.5 13.5 6 11.5 6 9a6 6 0 0 1 6-6z"/></svg></span>Ideas
+        </button>
+        <button class="nav-btn" id="nb-trophies" onclick="switchView('trophies',this)">
+          <span class="nav-icon" style="background:var(--gold-dim);border-color:var(--gold-dim)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M6 3H4a2 2 0 0 0-2 2v1a4 4 0 0 0 4 4h.5M18 3h2a2 2 0 0 1 2 2v1a4 4 0 0 1-4 4h-.5M7 3h10v6a5 5 0 0 1-10 0V3z"/></svg></span>Wins
+        </button>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      SURVIVING IS WINNING<br>2026 &middot; MPALA
+    </div>
+
+  <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px">
+    <button onclick="logOut()" style="width:100%;background:var(--red-dim);border:1px solid rgba(154,32,32,0.25);color:var(--rose);padding:9px 0;border-radius:10px;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;cursor:pointer;transition:all .2s;text-transform:uppercase">Log Out</button>
+  </div>
+</aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <div id="pwa-spacer" style="height:0;display:none"></div>
+<div class="topbar" id="topbar">
+      <div class="topbar-nav" id="floatNav">
+        <div class="topbar-nav-trigger" onclick="toggleFloatNav()">
+          <span class="float-logo">MPALA</span>
+          <svg class="float-caret" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="float-menu">
+          <div class="float-menu-section">
+            <button class="float-menu-item" onclick="switchView('overview',this);toggleFloatNav()"><span class="float-menu-dot"></span>Dashboard</button>
+            <button class="float-menu-item" onclick="switchView('daily',this);toggleFloatNav()"><span class="float-menu-dot"></span>Daily</button>
+            <button class="float-menu-item" onclick="switchView('mdp',this);toggleFloatNav()"><span class="float-menu-dot rose"></span>MDP</button>
+            <button class="float-menu-item" onclick="switchView('scaling',this);toggleFloatNav()"><span class="float-menu-dot sage"></span>Scaling Plan</button>
+            <button class="float-menu-item" onclick="switchView('invest',this);toggleFloatNav()"><span class="float-menu-dot azure"></span>Investments</button>
+            <button class="float-menu-item" onclick="switchView('ideas',this);toggleFloatNav()"><span class="float-menu-dot" style="background:var(--gold2)"></span>Ideas</button>
+            <button class="float-menu-item" onclick="switchView('trophies',this);toggleFloatNav()"><span class="float-menu-dot" style="background:var(--gold)"></span>Wins</button>
+          </div>
+          <div class="float-menu-section">
+            <button class="float-sidebar-toggle" onclick="toggleSidebarMode()">⇄ Full Sidebar</button>
+          </div>
+        </div>
+      </div>
+      <div id="phone-settings-wrap" style="display:none;position:relative;margin-right:auto">
+        <button id="phone-settings-btn" onclick="toggleSettings()" aria-label="Settings" style="background:none;border:1px solid var(--border2);color:var(--text2);width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s var(--ease-silk);padding:0">
+          <svg id="phone-settings-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <div id="settings-backdrop" onclick="toggleSettings()"></div>
+        <div id="settings-menu">
+          <div class="set-sec">
+            <button class="set-row" onclick="goToSettingsPage()">
+              <span>Settings</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.45"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+          <div class="set-sec">
+            <button class="set-row set-logout" onclick="logOut()">
+              <span>Log Out</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Pull-to-refresh indicator -->
+<div id="ptr-ind"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg></div>
+<!-- Sync status: fixed so it can never be clipped -->
+
+      <button id="desktop-mode-btn" onclick="togglePhoneMode()" style="display:none;background:none;border:1px solid var(--border2);color:var(--text3);padding:5px 14px;border-radius:8px;font-family:var(--font-mono);font-size:9px;letter-spacing:1px;cursor:pointer;transition:all .2s;white-space:nowrap">&#x21E4; Desktop</button>
+      <div class="topbar-page" id="topbarPage"></div>
+      <div class="topbar-date" id="topbarDate"></div>
+      <div class="topbar-divider"></div>
+      <div class="topbar-money-pill" onclick="switchView('overview',document.getElementById('nb-overview'))">
+        <div class="topbar-money-label">MADE</div>
+        <div class="topbar-money-val" id="topbarMoney">$0</div>
+      </div>
+    </div>
+    <div class="content" id="mainContent">
+
+<!-- ══════════════════════════════════════
+     VIEW: OVERVIEW
+══════════════════════════════════════ -->
+<div class="view active" id="view-overview">
+  <div class="page-header reveal" style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px">
+    <div>
+      <div class="page-title">Motion</div>
+      <div class="page-sub" style="text-align:left;margin-bottom:4px">Surviving is winning.</div>
+    <div id="quote-of-day-text" style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:8px;letter-spacing:1px;font-style:normal;text-align:center;max-width:280px"></div>
+    </div>
+    <button id="ovRestoreBtn" onclick="toggleSidebarMode()" style="display:none;align-items:center;gap:8px;background:var(--gold-dim);border:1px solid var(--gold);color:var(--gold);padding:10px 18px;border-radius:12px;font-family:var(--font-sans);font-size:12px;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:all .25s;flex-shrink:0;margin-top:8px">&#x21E4; Show Sidebar</button>
+  </div>
+
+  <div class="stat-grid" style="grid-template-columns:1fr 1fr;gap:12px;margin-bottom:0">
+    <div class="stat-card reveal reveal-delay-1" onclick="toggleMoneyEditor()" style="cursor:pointer">
+      <div class="stat-eyebrow">Money Made</div>
+      <div class="stat-value" id="ovStat-money" style="font-size:clamp(28px,4vw,48px)">$0</div>
+      <div class="stat-note" id="money-card-note">tap to view</div>
+    </div>
+    <div class="stat-card reveal reveal-delay-2" style="cursor:pointer" onclick="switchView('daily',document.getElementById('nb-daily'))">
+      <div class="stat-eyebrow">Daily Progress</div>
+      <div class="stat-value" id="ovStat-daily" style="font-size:28px">0%</div>
+      <div style="margin-top:10px;height:3px;background:var(--border2);border-radius:2px;overflow:hidden">
+        <div id="ovDailyBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width .5s var(--ease-silk)"></div>
+      </div>
+      <div class="stat-note" id="ovStat-daily-note">resets daily</div>
+            </div>
+  </div>
+  <div id="money-card-editor" class="editor-spring" style="background:var(--surface2);border:1px solid var(--border2);border-radius:14px;padding:16px;">
+    <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:12px">RECENT PAYOUTS</div>
+    <div id="recent-payouts-list">
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);text-align:center;padding:10px 0">No payouts logged yet</div>
+    </div>
+  </div>
+  <div id="undo-money-toast" onclick="undoMoneyAdd()" style="display:none;background:var(--gold-dim);border:1px solid var(--gold-dim);color:var(--gold);padding:10px 16px;border-radius:10px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;cursor:pointer;margin-top:8px;text-align:center"></div>
+  <div class="stat-grid" style="grid-template-columns:1fr 1fr;margin-top:12px;margin-bottom:0">
+    <div class="stat-card reveal reveal-delay-3" style="cursor:pointer" onclick="switchView('mdp',document.getElementById('nb-mdp'))">
+      <div class="stat-eyebrow">MDP Phase</div>
+      <div class="stat-value" id="ovStat-phase" style="font-size:38px">&mdash;</div>
+      <div style="margin-top:8px;height:3px;background:rgba(212,115,154,0.15);border-radius:2px;overflow:hidden">
+        <div id="ovPhaseBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--rose),var(--pink,#d4739a));border-radius:2px;transition:width .5s var(--ease-silk)"></div>
+      </div>
+      <div class="stat-note" id="ovStat-phase-note">tap to view phases</div>
+        <div class="stat-note" id="ovStat-phase-time" style="margin-top:2px;color:var(--text3)"></div>
+    </div>
+    <div class="stat-card reveal reveal-delay-5" id="monthly-income-card" style="cursor:pointer;position:relative;overflow:hidden" onclick="toggleMonthlyIncomeEditor()">
+      <div style="position:absolute;inset:0;pointer-events:none"></div>
+      <div class="stat-eyebrow">Monthly Income</div>
+      <div class="stat-value" id="ovStat-monthly" style="font-size:clamp(18px,2.5vw,32px)">$0</div>
+      <div style="margin-top:8px;height:3px;background:var(--border2);border-radius:2px;overflow:hidden">
+        <div id="ovMonthlyBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width .5s var(--ease-silk)"></div>
+      </div>
+      <div class="stat-note" id="ovStat-monthly-note">of $10,000 goal &middot; tap to set</div>
+    </div>
+  </div>
+  <div id="monthly-income-editor" style="background:var(--surface);border:1px solid var(--gold-dim);border-radius:16px;padding:20px 24px;margin-bottom:0;">
+    <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:10px">MONTHLY TARGET</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="numOnlyNeg(this)" pattern="[0-9.]*" inputmode="decimal" id="monthly-goal-input" type="text" placeholder="" style="flex:1;background:transparent;border:1.5px solid var(--gold-dim);border-radius:10px;padding:11px 14px;color:var(--text);font-family:var(--font-mono);font-size:13px;outline:none;min-width:0;box-sizing:border-box;transition:border-color .2s" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold-dim)'" onkeydown="if(event.key==='Enter')setMonthlyGoal()"/>
+      <button onclick="setMonthlyGoal()" style="background:var(--gold);color:#080806;border:none;padding:11px 20px;border-radius:10px;font-family:var(--font-sans);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .2s">SET</button>
+    </div>
+  </div>
+
+    <div class="card gap-top reveal reveal-delay-1">
+    <div class="card" style="cursor:pointer" onclick="switchView('daily',document.getElementById('nb-daily'))">
+      <div class="card-accent-line"></div>
+      <div class="card-title">Daily</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text3);line-height:2;margin-bottom:16px">
+        &mdash; I do the right thing<br>
+        &mdash; I don't FOMO<br>
+        &mdash; I act from principle not emotion<br>
+        &mdash; Surviving is winning
+      </div>
+      <div style="font-family:var(--font-mono);font-size:9px;color:var(--gold);letter-spacing:3px">VIEW FULL DAILY &#x2192;</div>
+    </div>
+  </div>
+
+  <!-- PNL CALENDAR -->
+  <div class="card gap-top reveal" id="pnl-calendar-card" >
+    <div class="card-section-head">
+      <div class="card-eyebrow">TRADING PERFORMANCE</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onclick="event.stopPropagation();pnlPrevMonth()" style="background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:2px 6px;line-height:1">&#x2190;</button>
+        <div id="pnl-month-name" style="font-family:var(--font-serif);font-size:20px;letter-spacing:3px;color:var(--gold)"></div>
+        <button onclick="event.stopPropagation();pnlNextMonth()" style="background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:2px 6px;line-height:1">&#x2192;</button>
+      </div>
+      <div id="pnl-month-stats" style="font-family:var(--font-mono);font-size:10px;color:var(--text3);text-align:right;line-height:1.7"></div>
+    </div>
+    <!-- Day labels -->
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:2px">
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--text3);text-align:center;padding:2px 0">M</div>
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--text3);text-align:center;padding:2px 0">T</div>
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--text3);text-align:center;padding:2px 0">W</div>
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--text3);text-align:center;padding:2px 0">T</div>
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--text3);text-align:center;padding:2px 0">F</div>
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--text3);text-align:center;padding:2px 0">S</div>
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--text3);text-align:center;padding:2px 0">S</div>
+    </div>
+    <div id="pnl-cal-grid" onclick="pnlFadeToJournal();" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;cursor:pointer"></div>
+  </div>
+
+  <!-- Equity Curve -->
+  <div class="card gap-top reveal" id="equity-curve-card">
+    <div class="card-eyebrow">EQUITY CURVE</div>
+    <div id="eq-summary" style="display:flex;align-items:baseline;gap:14px;margin:10px 0 4px">
+      <div id="eq-total" style="font-family:var(--font-serif);font-size:34px;font-weight:700;color:var(--gold);line-height:1">$0</div>
+      <div id="eq-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px"></div>
+    </div>
+    <div id="eq-chart-wrap" style="margin-top:14px">
+      <svg id="eq-chart" viewBox="0 0 600 180" preserveAspectRatio="none" style="width:100%;height:150px;display:block"></svg>
+    </div>
+    <div id="eq-empty" style="display:none;font-family:var(--font-mono);font-size:11px;color:var(--text3);padding:24px 0;text-align:center">No trades logged yet</div>
+  </div>
+
+  <!-- Trade Analytics -->
+  <div class="card gap-top reveal" id="trade-analytics-card">
+    <div class="card-eyebrow">TRADE ANALYTICS</div>
+    <div id="ta-body" style="margin-top:16px"></div>
+    <div id="ta-empty" style="display:none;font-family:var(--font-mono);font-size:11px;color:var(--text3);padding:24px 0;text-align:center">Log trades to see your stats</div>
+  </div>
+
+  <!-- Net Worth -->
+  <div class="card gap-top reveal" id="networth-card">
+    <div class="card-eyebrow">NET WORTH</div>
+    <div style="display:flex;align-items:baseline;gap:14px;margin:10px 0 4px">
+      <div id="nw-total" style="font-family:var(--font-serif);font-size:38px;font-weight:700;color:var(--gold);line-height:1;letter-spacing:-1px">$0</div>
+      <div id="nw-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px"></div>
+    </div>
+    <svg id="nw-spark" viewBox="0 0 600 70" preserveAspectRatio="none" style="width:100%;height:54px;display:block;margin-top:10px"></svg>
+  </div>
+
+  <div class="card gap-top reveal">
+    <div class="card" id="ov-mdp-card" style="cursor:pointer" onclick="switchView('mdp',document.getElementById('nb-mdp'))">
+      <div class="card-accent-line"></div>
+      <div class="card-title rose">MDP &mdash; Phases</div>
+      <ul class="checklist" id="ov-mdp-phases" style="pointer-events:none"></ul>
+      <div style="margin-top:16px;font-family:var(--font-mono);font-size:9px;color:var(--rose);letter-spacing:3px">VIEW FULL MDP &#x2192;</div>
+    </div>
+  </div>
+
+
+
+
+  <div class="g2 gap-top reveal reveal-delay-2">
+    <div class="card" style="cursor:pointer" onclick="switchView('scaling',document.getElementById('nb-scaling'))">
+      <div class="card-accent-line"></div>
+      <div class="card-title sage">Scaling Plan</div>
+      <div class="note-text">Never increase risk. Just do what's working.</div>
+      <table class="lux-table">
+        <thead><tr><th>Account</th><th>Price</th><th>Max</th></tr></thead>
+        <tbody>
+          <tr><td>Topstep $50k</td><td class="num">$115</td><td class="sage">5</td></tr>
+          <tr><td>APEX EOD $50k</td><td class="num">$349</td><td class="sage">20</td></tr>
+          <tr><td>Alpha Futures $50k</td><td class="num">$160</td><td class="sage">5</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:16px;font-family:var(--font-mono);font-size:9px;color:var(--sage);letter-spacing:3px">VIEW FULL SCALING &#x2192;</div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="switchView('invest',document.getElementById('nb-invest'))">
+      <div class="card-accent-line"></div>
+      <div class="card-title azure">Investments</div>
+      <table class="lux-table">
+        <thead><tr><th>Venture</th><th>Amount</th><th>Partner</th></tr></thead>
+        <tbody id="home-invest-tbody"></tbody>
+      </table>
+      <div style="margin-top:16px;font-family:var(--font-mono);font-size:9px;color:var(--azure);letter-spacing:3px">VIEW INVESTMENTS & ROI &#x2192;</div>
+    </div>
+  </div>
+
+  <div class="card gap-top reveal reveal-delay-3">
+    <div class="card-accent-line"></div>
+    <div class="section-head">
+      <div class="section-title">Custom Plans</div>
+      <div class="section-tag" id="ov-plan-count">0 plans</div>
+    </div>
+    <div class="plan-grid" id="ov-plan-grid"></div>
+    <div class="empty-state" id="ov-plan-empty">
+      <div class="empty-glyph">&#x25C8;</div>
+      <div class="empty-text">No plans yet &mdash; create one in Other Plans</div>
+    </div>
+  </div>
+
+
+    
+</div>
+
+<!-- ══════════════════════════════════════
+     VIEW: DAILY
+══════════════════════════════════════ -->
+<div class="view" id="view-daily">
+  <div class="daily-hero reveal">Daily.</div>
+  <div class="daily-tagline reveal reveal-delay-1">basically all the things future me does</div>
+
+  <div class="card reveal" id="session-clock-card">
+    <div class="card-title">Session <span id="sc-et-time" style="font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:2px;font-style:normal;margin-left:auto"></span></div>
+    <div id="sc-strip" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px"></div>
+    <div id="sc-status" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;color:var(--text3);text-align:center"></div>
+  </div>
+
+  <div class="card reveal" id="calc-card">
+    <div class="card-title">MNQ Size Calc</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div>
+        <div style="font-family:var(--font-mono);font-size:8px;letter-spacing:2px;color:var(--text3);margin-bottom:5px">RISK $</div>
+        <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" id="calc-risk" type="number" inputmode="decimal" class="form-input" placeholder="" oninput="calcMNQ()" style="width:100%">
+      </div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:8px;letter-spacing:2px;color:var(--text3);margin-bottom:5px">STOP (POINTS)</div>
+        <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" id="calc-stop" type="number" inputmode="decimal" class="form-input" placeholder="" oninput="calcMNQ()" style="width:100%">
+      </div>
+    </div>
+    <div id="calc-result" style="display:flex;justify-content:space-between;align-items:center;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:14px 16px">
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3)">CONTRACTS</div>
+      <div style="display:flex;align-items:baseline;gap:12px">
+        <div id="calc-contracts" style="font-family:var(--font-serif);font-size:28px;font-weight:700;color:var(--gold);line-height:1">--</div>
+        <div id="calc-actual" style="font-family:var(--font-mono);font-size:9px;color:var(--text3)"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card reveal" style="margin-bottom:20px;border-color:var(--gold-dim)">
+    <div class="card-accent-line" style="background:linear-gradient(180deg,transparent,var(--gold),transparent)"></div>
+    <div class="card-title gold">Pre-Market <span id="ctr-premarket" style="font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:2px;font-style:normal;margin-left:auto">0 / 8</span></div>
+    <ul class="checklist">
+      <li onclick="tc(this)"><span class="check-ring"></span>Check bias from previous day H/L</li>
+      <li onclick="tc(this)"><span class="check-ring"></span>Mark PDH and PDL on chart</li>
+      <li onclick="tc(this)"><span class="check-ring"></span>Mark overnight session highs/lows</li>
+      <li onclick="tc(this)"><span class="check-ring"></span>Identify HTF PDAs &mdash; 4h and 1h</li>
+      <li onclick="tc(this)"><span class="check-ring"></span>Note key liquidity levels</li>
+      <li onclick="tc(this)"><span class="check-ring"></span><span style="flex:1">Check news and economic calendar</span><button onclick="event.stopPropagation();openTape()" class="folder-launch-btn" aria-label="Open Tape economic calendar"><span class="folder-launch-icon"></span></button></li>
+      <li onclick="tc(this)"><span class="check-ring"></span><span style="flex:1">Read all mindset rules</span><button onclick="event.stopPropagation();openMindset()" class="folder-launch-btn brain-launch-btn" aria-label="Open mindset rules and lessons"><svg class="brain-launch-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.5A2.5 2.5 0 0 1 4.5 2H9a3 3 0 0 1 3 3v15a2.5 2.5 0 0 0-2.5-2.5H2V4.5Z"/><path d="M22 4.5A2.5 2.5 0 0 0 19.5 2H15a3 3 0 0 0-3 3v15a2.5 2.5 0 0 1 2.5-2.5H22V4.5Z"/></svg></button></li>
+      <li onclick="tc(this)"><span class="check-ring"></span>Close the competence gap today</li>
+    </ul>
+  </div>
+
+  <div class="card gap-top reveal reveal-delay-2">
+    <div class="card-accent-line"></div>
+    <div class="card-title" style="flex-wrap:wrap;gap:8px">Confluences &amp; Conditions <span id="phone-grade-badge" style="font-family:var(--font-serif);font-size:13px;font-weight:900;font-style:normal;color:var(--text3);padding:2px 8px;border-radius:6px;border:1px solid var(--border2);transition:color .3s,border-color .3s;margin-left:auto">&mdash;</span></div>
+    <!-- SETUP GRADE DISPLAY -->
+    <div id="conf-grade-wrap" style="display:flex;align-items:center;gap:16px;margin-bottom:18px;padding:14px 18px;background:var(--surface2);border-radius:14px;border:1px solid var(--border2);transition:border-color .3s">
+      <div>
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:var(--text3);margin-bottom:4px">SETUP GRADE</div>
+        <div id="conf-grade-letter" style="font-family:var(--font-serif);font-size:52px;font-weight:900;font-style:normal;line-height:1;color:var(--text3);transition:color .4s,transform .3s;display:inline-block">&mdash;</div>
+      </div>
+      <div style="flex:1">
+        <div id="conf-grade-label" style="font-family:var(--font-sans);font-size:13px;font-weight:600;color:var(--text2);margin-bottom:4px">Tick confluences to grade your setup</div>
+        <div id="conf-grade-desc" style="font-family:var(--font-mono);font-size:10px;color:var(--text3);line-height:1.6"></div>
+        <div style="margin-top:10px;height:3px;background:var(--border);border-radius:2px;overflow:hidden">
+          <div id="conf-grade-bar" style="height:100%;width:0%;border-radius:2px;transition:width .5s var(--ease-silk),background .4s"></div>
+        </div>
+      </div>
+      <div>
+        <button onclick="resetConf()" style="background:none;border:1px solid var(--border2);color:var(--text3);padding:5px 12px;border-radius:8px;font-family:var(--font-mono);font-size:9px;letter-spacing:1px;cursor:pointer;transition:all .2s">&#x21BA; Reset</button>
+      </div>
+    </div>
+    <div class="note-text">Why is the market moving? &nbsp;1. Rebalance inefficiencies &nbsp;&middot;&nbsp; 2. Rebalance equilibrium &nbsp;&middot;&nbsp; 3. Seek liquidity</div>
+    <div class="g2">
+      <ul class="checklist">
+        <li onclick="tc(this)"><span class="check-ring"></span>Known bias &mdash; 1h and 4h PDAs</li>
+        <li onclick="tc(this)"><span class="check-ring"></span>AMD?</li>
+        <li onclick="tc(this)"><span class="check-ring"></span>FVG</li>
+        <li onclick="tc(this)"><span class="check-ring"></span><span class="hl">10am</span> open</li>
+        <li onclick="tc(this)"><span class="check-ring"></span>Rejection block</li>
+        <li onclick="tc(this)"><span class="check-ring"></span><span class="hl">1m</span> or <span class="hl">5m</span> entry trigger</li>
+      </ul>
+      <ul class="checklist">
+        <li onclick="tc(this)"><span class="check-ring"></span>OTE</li>
+        <li onclick="tc(this)"><span class="check-ring"></span>Midnight open</li>
+        <li onclick="tc(this)"><span class="check-ring"></span>SMT</li>
+        <li onclick="tc(this)"><span class="check-ring"></span>CISD/Order Block</li>
+        <li onclick="tc(this)"><span class="check-ring"></span>Engineered liquidity / wick CE</li>
+        <li onclick="tc(this)"><span class="check-ring"></span>Max stop loss 25pts</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card gap-top reveal reveal-delay-3">
+    <div class="card-accent-line"></div>
+    <div class="card-title sage">Targets <span id="ctr-targets" style="font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:2px;font-style:normal;margin-left:auto">0 / 8</span></div>
+    <ul class="checklist">
+      <li onclick="tc(this)"><span class="check-ring"></span>Unmitigated 5m</li>
+      <li onclick="tc(this)"><span class="check-ring"></span>Unmitigated 15min</li>
+      <li onclick="tc(this)"><span class="check-ring"></span>BSL / SSL</li>
+      <li onclick="tc(this)"><span class="check-ring"></span>REQL / REQH</li>
+      <li onclick="tc(this)"><span class="check-ring"></span>NDOG / NWOG</li>
+      <li onclick="tc(this)"><span class="check-ring"></span>PDH / PDL</li>
+      <li onclick="tc(this)"><span class="check-ring"></span>Session H/L</li>
+      <li onclick="tc(this)"><span class="check-ring"></span>LRL (failure swings)</li>
+    </ul>
+  </div>
+
+  <div class="card gap-top reveal" style="cursor:pointer" onclick="switchView('journal',document.getElementById('nb-daily'))">
+    <div class="card-accent-line"></div>
+    <div class="card-title no-collapse">Journal &amp; Reviews <span style="font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:2px;font-style:normal;margin-left:auto">&#8594;</span></div>
+    <div id="journal-summary" style="display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     VIEW: JOURNAL & REVIEWS
+══════════════════════════════════════ -->
+<div class="view" id="view-journal">
+  <div class="page-header reveal" style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <div>
+      <div class="page-eyebrow">Daily</div>
+      <div class="page-title">Journal.</div>
+    </div>
+    <button onclick="switchView('daily',document.getElementById('nb-daily'))" style="background:none;border:1px solid var(--border2);color:var(--text3);padding:8px 14px;border-radius:10px;font-family:var(--font-mono);font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;flex-shrink:0">&#8592; DAILY</button>
+  </div>
+
+  <!-- TRADE JOURNAL -->
+  <div id="journal-anchor" style="display:block;height:0;margin-top:-20px;padding-top:20px;visibility:hidden;pointer-events:none"></div>
+  <div class="card reveal reveal-delay-1" id="journal-card">
+    <div class="card-accent-line"></div>
+    <div class="card-title" style="display:flex;align-items:center">Trade Journal
+      <span id="journal-count" style="font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-left:auto">0 entries</span>
+    </div>
+    <!-- Row 1: Direction -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <button id="jnl-btn-long" onclick="setJnlDirection('Long')" style="padding:12px;border-radius:12px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--text3);font-family:var(--font-serif);font-size:18px;font-weight:700;font-style:normal;cursor:pointer;transition:all .2s;letter-spacing:.5px">LONG &#x2191;</button>
+      <button id="jnl-btn-short" onclick="setJnlDirection('Short')" style="padding:12px;border-radius:12px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--text3);font-family:var(--font-serif);font-size:18px;font-weight:700;font-style:normal;cursor:pointer;transition:all .2s;letter-spacing:.5px">SHORT &#x2193;</button>
+    </div>
+    <!-- Row 2: Outcome -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
+      <button id="jnl-btn-win" onclick="setJnlOutcome('Win')" style="padding:11px;border-radius:12px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--text3);font-family:var(--font-mono);font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .2s">WIN</button>
+      <button id="jnl-btn-be" onclick="setJnlOutcome('Break Even')" style="padding:11px;border-radius:12px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--text3);font-family:var(--font-mono);font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .2s">BREAK EVEN</button>
+      <button id="jnl-btn-loss" onclick="setJnlOutcome('Loss')" style="padding:11px;border-radius:12px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--text3);font-family:var(--font-mono);font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .2s">LOSS</button>
+    </div>
+    <!-- Row 3: P&L + Lesson -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" id="jnl-result" type="text" inputmode="decimal" class="form-input" placeholder="P&L amount"/>
+      <button id="jnl-lesson-btn" onclick="openLessonModal()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text2);padding:10px 14px;border-radius:12px;font-family:var(--font-sans);font-size:13px;text-align:left;cursor:pointer;width:100%;min-height:44px">What I learned...</button>
+      <textarea autocomplete="off" id="jnl-lesson" style="display:none"></textarea>
+    </div>
+    <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="hidden" id="jnl-direction" value=""/>
+    <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="hidden" id="jnl-outcome" value=""/>
+    <div id="jnl-validation-msg" style="display:none;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;color:var(--rose);text-align:center;padding:6px 0 8px">Choose direction first</div>
+    <button onclick="logTrade()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--gold);padding:9px 20px;border-radius:10px;font-family:var(--font-sans);font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;width:100%">+ Log Trade</button>
+    <div style="display:flex;justify-content:flex-end;margin-top:14px;margin-bottom:4px">
+      <button id="journal-edit-btn" onclick="toggleJournalEdit()" style="background:none;border:1px solid var(--border2);color:var(--text3);padding:5px 12px;border-radius:8px;font-family:var(--font-mono);font-size:9px;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s">&#x270E; Edit</button>
+    </div>
+    <div id="trade-journal-list" style="display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto"></div>
+  </div>
+
+  <!-- Equity Curve (live mirror) -->
+  <div class="card gap-top reveal" id="equity-curve-card-jnl">
+    <div class="card-eyebrow">EQUITY CURVE</div>
+    <div id="eq-summary-jnl" style="display:flex;align-items:baseline;gap:14px;margin:10px 0 4px">
+      <div id="eq-total-jnl" style="font-family:var(--font-serif);font-size:34px;font-weight:700;color:var(--gold);line-height:1">$0</div>
+      <div id="eq-sub-jnl" style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px"></div>
+    </div>
+    <div id="eq-chart-wrap-jnl" style="margin-top:14px">
+      <svg id="eq-chart-jnl" viewBox="0 0 600 180" preserveAspectRatio="none" style="width:100%;height:150px;display:block"></svg>
+    </div>
+    <div id="eq-empty-jnl" style="display:none;font-family:var(--font-mono);font-size:11px;color:var(--text3);padding:24px 0;text-align:center">No trades logged yet</div>
+  </div>
+
+  <!-- Trade Analytics (live mirror) -->
+  <div class="card gap-top reveal" id="trade-analytics-card-jnl">
+    <div class="card-eyebrow">TRADE ANALYTICS</div>
+    <div id="ta-body-jnl" style="margin-top:16px"></div>
+    <div id="ta-empty-jnl" style="display:none;font-family:var(--font-mono);font-size:11px;color:var(--text3);padding:24px 0;text-align:center">Log trades to see your stats</div>
+  </div>
+
+  <div class="card gap-top reveal reveal-delay-2">
+    <div class="card-accent-line"></div>
+    <div class="card-title sage">20 Good Trades Tracker</div>
+    <div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:2px;margin-bottom:16px">NO METHOD MISTAKE + NO PSYCHOLOGICAL MISTAKE</div>
+    <div class="trade-grid" id="tradeGrid"></div>
+    <div style="margin-top:16px;font-family:var(--font-mono);font-size:11px;color:var(--text3)" id="tradeCount">0 / 20 clean trades</div>
+  </div>
+
+  <div class="card gap-top reveal reveal-delay-3" id="weekly-review-card">
+    <div class="card-accent-line"></div>
+    <div class="card-title">Weekly Review <span id="wr-badge" style="display:none;font-family:var(--font-mono);font-size:8px;letter-spacing:2px;color:#0d0c0a;background:var(--gold);padding:3px 8px;border-radius:6px;font-style:normal;margin-left:auto">REVIEW DAY</span></div>
+    <div id="wr-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px"></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div>
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:6px">WHAT WORKED</div>
+        <textarea autocomplete="off" id="wr-q1" class="form-input" rows="2" placeholder="What went well this week..." style="resize:none;width:100%"></textarea>
+      </div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:6px">WHAT DIDN'T</div>
+        <textarea autocomplete="off" id="wr-q2" class="form-input" rows="2" placeholder="What needs fixing..." style="resize:none;width:100%"></textarea>
+      </div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:6px">FOCUS FOR NEXT WEEK</div>
+        <textarea autocomplete="off" id="wr-q3" class="form-input" rows="2" placeholder="One thing to focus on..." style="resize:none;width:100%"></textarea>
+      </div>
+      <button onclick="saveWeeklyReview()" style="padding:13px;border-radius:12px;border:1px solid var(--gold);background:var(--gold-dim);color:var(--gold);font-family:var(--font-mono);font-size:10px;letter-spacing:3px;cursor:pointer;transition:all .25s">SAVE REVIEW</button>
+    </div>
+    <div id="wr-history" style="margin-top:18px;display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+
+  <div class="card gap-top reveal reveal-delay-4">
+    <div class="card-accent-line"></div>
+    <div class="card-title red">If Stop Loss Hits</div>
+    <ol style="list-style:none;padding:0;margin:0">
+      <li style="display:flex;align-items:flex-start;gap:14px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)"><span style="font-family:var(--font-serif);font-size:22px;font-weight:700;color:var(--red);line-height:1;flex-shrink:0;font-style:normal;min-width:24px">1</span>Method mistake?</li>
+      <li style="display:flex;align-items:flex-start;gap:14px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)"><span style="font-family:var(--font-serif);font-size:22px;font-weight:700;color:var(--red);line-height:1;flex-shrink:0;font-style:normal;min-width:24px">2</span>Psychological mistake?</li>
+      <li style="display:flex;align-items:flex-start;gap:14px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)"><span style="font-family:var(--font-serif);font-size:22px;font-weight:700;color:var(--red);line-height:1;flex-shrink:0;font-style:normal;min-width:24px">3</span>Probability not on my side.</li>
+      <li style="display:flex;align-items:flex-start;gap:14px;padding:10px 0;font-size:13px;color:var(--text2)"><span style="font-family:var(--font-serif);font-size:22px;font-weight:700;color:var(--red);line-height:1;flex-shrink:0;font-style:normal;min-width:24px">&mdash;</span>Most importantly &mdash; learn from mistakes.</li>
+    </ol>
+    <div style="margin-top:16px;font-family:var(--font-mono);font-size:11px;color:var(--text3);line-height:1.8">
+      Take 20 good trades in a row<br>Rules: no method mistake and no psychological mistake
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     VIEW: MDP
+══════════════════════════════════════ -->
+<div class="view" id="view-mdp">
+  <div class="page-header reveal">
+    <div class="page-eyebrow">Master Development Plan</div>
+    <div class="page-title">MDP</div>
+  </div>
+  <div class="g2 reveal reveal-delay-1">
+    <div class="card">
+      <div class="card-accent-line"></div>
+      <div class="card-title rose">Core Principles</div>
+      <ol style="list-style:none;padding:0;margin:0">
+        <li style="display:flex;align-items:flex-start;gap:14px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)"><span style="font-family:var(--font-serif);font-size:22px;font-weight:700;color:var(--rose);line-height:1;flex-shrink:0;font-style:normal;min-width:22px">1</span>The day is won or lost when I wake up</li>
+        <li style="display:flex;align-items:flex-start;gap:14px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)"><span style="font-family:var(--font-serif);font-size:22px;font-weight:700;color:var(--rose);line-height:1;flex-shrink:0;font-style:normal;min-width:22px">2</span>Contraction is data (ups and downs)</li>
+        <li style="display:flex;align-items:flex-start;gap:14px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)"><span style="font-family:var(--font-serif);font-size:22px;font-weight:700;color:var(--rose);line-height:1;flex-shrink:0;font-style:normal;min-width:22px">3</span>Multitasking is not real</li>
+        <li style="display:flex;align-items:flex-start;gap:14px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)"><span style="font-family:var(--font-serif);font-size:22px;font-weight:700;color:var(--rose);line-height:1;flex-shrink:0;font-style:normal;min-width:22px">4</span>Protect mental at all costs</li>
+        <li style="display:flex;align-items:flex-start;gap:14px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)"><span style="font-family:var(--font-serif);font-size:22px;font-weight:700;color:var(--rose);line-height:1;flex-shrink:0;font-style:normal;min-width:22px">5</span>SET FRAME</li>
+        <li style="display:flex;align-items:flex-start;gap:14px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)"><span style="font-family:var(--font-serif);font-size:22px;font-weight:700;color:var(--rose);line-height:1;flex-shrink:0;font-style:normal;min-width:22px">6</span>CASH IS KING</li>
+        <li style="display:flex;align-items:flex-start;gap:14px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)"><span style="font-family:var(--font-serif);font-size:22px;font-weight:700;color:var(--rose);line-height:1;flex-shrink:0;font-style:normal;min-width:22px">7</span>Wrong movement is better than none</li>
+        <li style="display:flex;align-items:flex-start;gap:14px;padding:10px 0;font-size:13px;color:var(--text2)"><span style="font-family:var(--font-serif);font-size:22px;font-weight:700;color:var(--rose);line-height:1;flex-shrink:0;font-style:normal;min-width:22px">8</span>Don't repeat mistakes</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="gap-top reveal reveal-delay-2">
+    <div class="phase-wrap">
+      <div class="phase-header" onclick="togglePhase(this)">
+        <div class="phase-name">Phase 1</div>
+        <div class="phase-badge"><span class="phase-pill" id="pill-p1">1 / 6 done</span><span class="phase-chevron">&#x25BE;</span></div>
+      </div>
+      <div class="phase-body">
+        <ul class="checklist">
+          <li onclick="tc(this)" class="checked"><span class="check-ring"></span>Buy $50,000 challenge</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Pass challenge and get funded account</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Build buffer of 5k on my account</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Withdrawals every 2 weeks $2000</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Buy laptop and phone</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Generate $10k to advance</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase-wrap">
+      <div class="phase-header collapsed" onclick="togglePhase(this)">
+        <div class="phase-name">Phase 2</div>
+        <div class="phase-badge"><span class="phase-pill" id="pill-p2">0 / 12 done</span><span class="phase-chevron">&#x25BE;</span></div>
+      </div>
+      <div class="phase-body collapsed">
+        <ul class="checklist">
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocate topstep</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation tradify</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation lucid</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation apex</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation MFF</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation funded next</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation goat funded</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation E8</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation blue guardian</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation Phidias</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation TBT</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Buffers on all accounts to advance</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase-wrap">
+      <div class="phase-header collapsed" onclick="togglePhase(this)">
+        <div class="phase-name">Phase 3</div>
+        <div class="phase-badge"><span class="phase-pill" id="pill-p3">0 / 9 done</span><span class="phase-chevron">&#x25BE;</span></div>
+      </div>
+      <div class="phase-body collapsed">
+        <ul class="checklist">
+          <li onclick="tc(this)"><span class="check-ring"></span>Move out</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Repeat phase 2 with Jean Paul</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Repeat with Denz</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Repeat with Kudzai</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Repeat with Ashley</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Repeat with Tavimba</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Repeat</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Trade accounts separately</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>End this phase with all users with buffers $5k</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase-wrap">
+      <div class="phase-header collapsed" onclick="togglePhase(this)">
+        <div class="phase-name">Phase 4</div>
+        <div class="phase-badge"><span class="phase-pill" id="pill-p4">0 / 11 done</span><span class="phase-chevron">&#x25BE;</span></div>
+      </div>
+      <div class="phase-body collapsed">
+        <ul class="checklist">
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation FTMO</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation FXIFY</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation Equity edge</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation Think capital</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation funding pips</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation Alpha capital</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation goat instant</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation funded next</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Max allocation blue guardian</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>E8 500k</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>End phase with 10k r/pnl in each</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase-wrap">
+      <div class="phase-header collapsed" onclick="togglePhase(this)">
+        <div class="phase-name">Phase 5</div>
+        <div class="phase-badge"><span class="phase-pill" id="pill-p5">0 / 3 done</span><span class="phase-chevron">&#x25BE;</span></div>
+      </div>
+      <div class="phase-body collapsed">
+        <ul class="checklist">
+          <li onclick="tc(this)"><span class="check-ring"></span><span class="bold-item">JOURNAL THE TRADES (every single one)</span></li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Invest in knowledge</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Invest in other projects</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase-wrap" style="border-color:var(--gold-dim)">
+      <div class="phase-header collapsed" style="background:var(--gold-glow)" onclick="togglePhase(this)">
+        <div class="phase-name gold">End Goal</div>
+        <div class="phase-badge"><span class="phase-pill" id="pill-end">0 / 5 done</span><span class="phase-chevron">&#x25BE;</span></div>
+      </div>
+      <div class="phase-body collapsed">
+        <ul class="checklist">
+          <li onclick="tc(this)"><span class="check-ring"></span>Make 6 figures per month</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Have 7 figures in bank</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Have Ferrari</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>Have own home</li>
+          <li onclick="tc(this)"><span class="check-ring"></span>All this by myself with no one's help &mdash; I owe nothing to anyone</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<!-- ══════════════════════════════════════
+     VIEW: SCALING
+══════════════════════════════════════ -->
+<div class="view" id="view-scaling">
+  <div class="page-header reveal">
+    <div class="page-title">Scale Up</div>
+    <div class="page-sub">Entirely in my hands btw &mdash; never increase risk. Just do what's working.</div>
+  </div>
+
+  <div class="g2 reveal reveal-delay-1">
+    <div class="card">
+      <div class="card-accent-line"></div>
+      <div class="card-title sage">Steps <span id="ctr-steps" style="font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:2px;font-style:normal;margin-left:auto">0 / 6</span></div>
+      <ul class="checklist">
+        <li onclick="tc(this)"><span class="check-ring"></span>Get funded</li>
+        <li onclick="tc(this)"><span class="check-ring"></span>Big league behaviour only</li>
+        <li onclick="tc(this)"><span class="check-ring"></span>Build buffer of $4,000</li>
+        <li onclick="tc(this)"><span class="check-ring"></span>Get payout target $2,000</li>
+        <li onclick="tc(this)"><span class="check-ring"></span>Max out topstep $460</li>
+        <li onclick="tc(this)"><span class="check-ring"></span>Tradesyncer $50p/m</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-accent-line"></div>
+      <div class="card-title sage">Total Allocation Per Person</div>
+      <table class="lux-table">
+        <thead><tr><th>Person</th><th>Futures Max</th><th>CFDs Max</th></tr></thead>
+        <tbody>
+          <tr><td>Tinashe</td><td class="sage">73</td><td class="sage">10</td></tr>
+          <tr><td>Jean Paul</td><td class="sage">73 (95%)</td><td class="sage">10</td></tr>
+          <tr><td>Denz</td><td class="sage">73 (60%)</td><td class="sage">10</td></tr>
+          <tr><td>Kudzai</td><td class="sage">73 (95%)</td><td class="sage">10</td></tr>
+          <tr><td>Ashley</td><td class="sage">73 (95%)</td><td class="sage">10</td></tr>
+          <tr><td>Tad</td><td class="sage">73 (90%)</td><td>&mdash;</td></tr>
+          <tr><td>Tavimba</td><td class="sage">73 (60%)</td><td>&mdash;</td></tr>
+          <tr><td class="bold">Total</td><td class="bold">511</td><td class="bold">50 accs</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card gap-top reveal reveal-delay-2">
+    <div class="card-accent-line"></div>
+    <div class="card-title sage">Small Futures Accounts ($50k) &mdash; 73 Maximum</div>
+    <div style="overflow-x:auto">
+    <table class="lux-table">
+      <thead><tr><th>Account</th><th>Price per Acc</th><th>Max</th><th>Platform</th><th>Consistency Rule</th><th>Max Payout</th></tr></thead>
+      <tbody>
+        <tr><td>Topstep $50k</td><td class="num">$115</td><td class="sage">5</td><td>Project X</td><td style="color:var(--sage)">No</td><td class="gold num">$2,000</td></tr>
+        <tr><td>Lucid $50k flex</td><td class="num">$140 (use codes)</td><td class="sage">5</td><td>Tradovate</td><td style="color:var(--sage)">No</td><td class="gold num">$2,000</td></tr>
+        <tr><td>Tradify $50k select</td><td class="num">$165 (use codes)</td><td class="sage">5</td><td>Tradovate</td><td style="color:var(--sage)">No</td><td class="gold num">$3,000</td></tr>
+        <tr><td>APEX EOD trail $50k</td><td class="num">$349 (use codes)</td><td class="sage">20</td><td>Tradovate</td><td style="color:var(--rose)">50%</td><td class="gold num">$1,500 – $3,000 <span style="font-size:10px;color:var(--text3)">(max 6)</span></td></tr>
+        <tr><td>My funded futures pro $50k</td><td class="num">$157 (use codes)</td><td class="sage">5</td><td>Tradovate</td><td style="color:var(--sage)">No</td><td class="gold num">Up to $100k</td></tr>
+        <tr><td>Funded next $50k flex</td><td class="num">$150</td><td class="sage">5</td><td>Tradovate</td><td style="color:var(--sage)">No</td><td class="gold num">$1,500</td></tr>
+        <tr><td>Goat funded futures $50k EOD</td><td class="num">$134 (use codes)</td><td class="sage">5</td><td>Tradovate</td><td style="color:var(--rose)">30%</td><td class="gold num">$1,500 – $2,700</td></tr>
+        <tr><td>E8 $50k</td><td class="num">$150 (use codes)</td><td class="sage">5</td><td>Tradovate</td><td style="color:var(--rose)">35%</td><td class="gold num">$1,250 – $3,200</td></tr>
+        <tr><td>Blue guardian $50k standard</td><td class="num">$130 (use codes)</td><td class="sage">3</td><td>Tradovate</td><td style="color:var(--rose)">35%</td><td class="gold num">$1,350</td></tr>
+        <tr><td>Phidias $50k</td><td class="num">$314 (use codes)</td><td class="sage">5</td><td>Tradovate</td><td style="color:var(--rose)">30%</td><td class="gold num">$1,500 – $2,000</td></tr>
+        <tr><td>Take profit trader $50k</td><td class="num">$170</td><td class="sage">5</td><td>Tradovate</td><td style="color:var(--text3);font-size:11px">Intraday trailing &mdash; push for <strong>pro+ EOD</strong></td><td class="num" style="color:var(--text3)">None</td></tr>
+        <tr><td>Alpha Futures $50k premium</td><td class="num">$160 (use codes)</td><td class="sage">5</td><td>Tradovate</td><td style="color:var(--sage)">No</td><td class="gold num">$3,000 – $6,000</td></tr>
+        <tr><td class="bold">Total</td><td>&mdash;</td><td class="bold">73</td><td class="bold">Tradesyncer</td><td>&mdash;</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+
+    <!-- FUTURES COUNTER -->
+    <div style="margin-top:20px;padding-top:18px;border-top:1px solid var(--border)">
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:var(--sage);text-transform:uppercase;margin-bottom:14px">Live Tracker</div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:12px">
+          <label style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;white-space:nowrap">Accounts funded</label>
+          <div style="display:flex;align-items:center;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;overflow:hidden;transition:border-color .2s">
+            <button onclick="stepTracker('fut-count',-1,'updateFuturesTracker')" style="background:none;border:none;color:var(--text3);width:36px;height:38px;font-size:18px;cursor:pointer;transition:color .15s;display:flex;align-items:center;justify-content:center;font-family:var(--font-serif)">−</button>
+            <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="numeric" pattern="[0-9]*" type="number" id="fut-count" min="0" max="73" value="0" oninput="updateFuturesTracker()"
+              style="width:52px;background:none;border:none;color:var(--text);font-family:var(--font-mono);font-size:15px;font-weight:500;outline:none;text-align:center;padding:0"/>
+            <button onclick="stepTracker('fut-count',1,'updateFuturesTracker')" style="background:none;border:none;color:var(--text3);width:36px;height:38px;font-size:18px;cursor:pointer;transition:color .15s;display:flex;align-items:center;justify-content:center;font-family:var(--font-serif)">+</button>
+          </div>
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3)">/ 73 max</span>
+        </div>
+        <div style="display:flex;gap:20px;flex-wrap:wrap;margin-left:auto">
+          <div>
+            <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:4px">FUNDED CAPITAL</div>
+            <div style="font-family:var(--font-serif);font-size:24px;font-weight:700;font-style:normal;color:var(--sage)" id="fut-capital">$0</div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3)">EST. PAYOUT</div>
+              <select id="fut-payout-rate" onchange="updateFuturesTracker()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--gold);border-radius:6px;padding:2px 6px;font-family:var(--font-mono);font-size:9px;outline:none;cursor:pointer;transition:border-color .2s">
+                <option value="500">$500/acc</option>
+                <option value="1000">$1,000/acc</option>
+                <option value="1500" selected>$1,500/acc</option>
+                <option value="2000">$2,000/acc</option>
+                <option value="2500">$2,500/acc</option>
+                <option value="3000">$3,000/acc</option>
+              </select>
+            </div>
+            <div style="font-family:var(--font-serif);font-size:24px;font-weight:700;font-style:normal;color:var(--gold2)" id="fut-payout">$0</div>
+            <div id="fut-custom-wrap" style="display:none;margin-top:6px;display:none">
+              <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="decimal" type="text" id="fut-custom-val" placeholder="" oninput="updateFuturesTracker()"
+                style="width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:5px 8px;font-family:var(--font-mono);font-size:11px;outline:none;box-sizing:border-box"
+                onfocus="this.style.borderColor='var(--sage)'" onblur="this.style.borderColor='var(--border2)'"/>
+            </div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:4px">PROGRESS</div>
+            <div style="font-family:var(--font-serif);font-size:24px;font-weight:700;font-style:normal;color:var(--text2)" id="fut-pct">0%</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px;height:3px;background:var(--border2);border-radius:2px;overflow:hidden">
+        <div id="fut-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--sage),var(--gold));border-radius:2px;transition:width .4s var(--ease-silk)"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card gap-top reveal reveal-delay-3">
+    <div class="card-accent-line"></div>
+    <div class="card-title">Big Accounts &mdash; CFDs (10 per person)</div>
+    <table class="lux-table">
+      <thead><tr><th>Account</th><th>Price</th><th>Platform</th></tr></thead>
+      <tbody>
+        <tr><td>FTMO 200k</td><td class="gold num">€1,080</td><td>MT5</td></tr>
+        <tr><td>FXIFY $100k</td><td class="gold num">$550</td><td>TradingView</td></tr>
+        <tr><td>Equity edge</td><td class="gold num">$530</td><td>MT5</td></tr>
+        <tr><td>Think capital (lighting)</td><td class="gold num">$500</td><td>TradingView</td></tr>
+        <tr><td>Funding pips 200k</td><td class="gold num">$800</td><td>MT5</td></tr>
+        <tr><td>Alpha capital 200k</td><td class="gold num">$850</td><td>MT5</td></tr>
+        <tr><td>Goat instant 400k</td><td class="gold num">$1,500</td><td>MT5</td></tr>
+        <tr><td>Funded next $200k</td><td class="gold num">$1,100</td><td>MT5</td></tr>
+        <tr><td>Blue guardian $400k</td><td class="gold num">$2,800</td><td>MT5</td></tr>
+        <tr><td>E8 markets $500k (100% pay)</td><td class="gold num">$2,500</td><td>MT5</td></tr>
+        <tr><td class="bold">Total</td><td>&mdash;</td><td class="bold">10 accounts</td></tr>
+      </tbody>
+    </table>
+    <!-- CFD COUNTER -->
+    <div style="margin-top:20px;padding-top:18px;border-top:1px solid var(--border)">
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:14px">Live Tracker</div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:12px">
+          <label style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px;white-space:nowrap">Accounts funded</label>
+          <div style="display:flex;align-items:center;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;overflow:hidden;transition:border-color .2s">
+            <button onclick="stepTracker('cfd-count',-1,'updateCFDTracker')" style="background:none;border:none;color:var(--text3);width:36px;height:38px;font-size:18px;cursor:pointer;transition:color .15s;display:flex;align-items:center;justify-content:center;font-family:var(--font-serif)">−</button>
+            <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="numeric" pattern="[0-9]*" type="number" id="cfd-count" min="0" max="10" value="0" oninput="updateCFDTracker()"
+              style="width:52px;background:none;border:none;color:var(--text);font-family:var(--font-mono);font-size:15px;font-weight:500;outline:none;text-align:center;padding:0"/>
+            <button onclick="stepTracker('cfd-count',1,'updateCFDTracker')" style="background:none;border:none;color:var(--text3);width:36px;height:38px;font-size:18px;cursor:pointer;transition:color .15s;display:flex;align-items:center;justify-content:center;font-family:var(--font-serif)">+</button>
+          </div>
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3)">/ 10 max</span>
+        </div>
+        <div style="display:flex;gap:20px;flex-wrap:wrap;margin-left:auto">
+          <div>
+            <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:4px">FUNDED CAPITAL</div>
+            <div style="font-family:var(--font-serif);font-size:24px;font-weight:700;font-style:normal;color:var(--gold2)" id="cfd-capital">$0</div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3)">EST. PAYOUT</div>
+              <select id="cfd-payout-rate" onchange="updateCFDTracker()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--gold);border-radius:6px;padding:2px 6px;font-family:var(--font-mono);font-size:9px;outline:none;cursor:pointer;transition:border-color .2s">
+                <option value="1000">$1k/acc</option>
+                <option value="2000">$2k/acc</option>
+                <option value="5000" selected>$5k/acc</option>
+                <option value="10000">$10k/acc</option>
+                <option value="20000">$20k/acc</option>
+                <option value="50000">$50k/acc</option>
+              </select>
+            </div>
+            <div style="font-family:var(--font-serif);font-size:24px;font-weight:700;font-style:normal;color:var(--gold2)" id="cfd-payout">$0</div>
+            <div id="cfd-custom-wrap" style="display:none">
+              <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="decimal" type="text" id="cfd-custom-val" placeholder="" oninput="updateCFDTracker()"
+                style="width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:5px 8px;font-family:var(--font-mono);font-size:11px;outline:none;box-sizing:border-box"
+                onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'"/>
+            </div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:4px">PROGRESS</div>
+            <div style="font-family:var(--font-serif);font-size:24px;font-weight:700;font-style:normal;color:var(--text2)" id="cfd-pct">0%</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px;height:3px;background:var(--border2);border-radius:2px;overflow:hidden">
+        <div id="cfd-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width .4s var(--ease-silk)"></div>
+      </div>
+    </div>
+  </div>
+
+
+</div><div class="view" id="view-invest">
+  <div class="page-header reveal">
+    <div class="page-title">Invest &amp; Grow</div>
+    <div class="page-eyebrow">Investment Portfolio</div>
+    <div class="page-sub">Estimated ROI &mdash; adjust return rate with the slider on each investment</div>
+  </div>
+
+  <!-- ROI CARDS - rendered by JS -->
+  <div id="roiCards"></div>
+
+  <div class="card gap-top reveal reveal-delay-4" style="padding-bottom:24px">
+    <div class="card-accent-line"></div>
+    <div class="card-title azure">Portfolio Summary</div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="lux-table" style="min-width:480px">
+      <thead><tr><th>Venture</th><th>Invested</th><th>Partner</th><th>Annual Return</th><th>3yr Profit</th></tr></thead>
+      <tbody id="investSummaryBody"></tbody>
+    </table></div>
+    <div style="margin-top:20px;display:flex;gap:32px">
+      <div>
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:4px">TOTAL INVESTED</div>
+        <div style="font-family:var(--font-serif);font-size:28px;font-weight:300;color:var(--gold2)" id="totalInvested">$85,000</div>
+      </div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:4px">EST. ANNUAL RETURN</div>
+        <div style="font-family:var(--font-serif);font-size:28px;font-weight:300;color:var(--sage)" id="totalAnnual">&mdash;</div>
+      </div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:4px">EST. 3-YEAR PROFIT</div>
+        <div style="font-family:var(--font-serif);font-size:28px;font-weight:300;color:var(--sage)" id="total3yr">&mdash;</div>
+      </div>
+    </div>
+  </div>
+</div><div class="view" id="view-all">
+  <div class="page-header reveal" style="margin-bottom:28px">
+    <button onclick="closeSlideView('all','ideas')" style="background:none;border:1px solid rgba(255,255,255,0.1);color:var(--text3);padding:6px 14px;border-radius:8px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;cursor:pointer;margin-bottom:14px;display:inline-flex;align-items:center;gap:6px">&#x2190; IDEAS</button>
+    <div class="page-title">Other Plans</div>
+  </div>
+
+  <!-- COLLAPSIBLE CREATE FORM -->
+  <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:20px">
+    <button onclick="toggleCreatePlan()" id="create-plan-toggle" title="New plan" style="background:var(--gold-dim);border:1px solid var(--gold-dim);color:var(--gold);padding:8px 14px;border-radius:10px;font-family:var(--font-sans);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s">+ New Plan</button>
+  </div>
+  <div id="create-plan-card" style="max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(0.16,1,0.3,1),opacity .35s ease;opacity:0;margin-bottom:0">
+  <div class="card" style="margin-bottom:24px;border-color:var(--gold-dim);">
+    <div class="card-accent-line" style="background:linear-gradient(180deg,transparent,var(--gold),var(--gold2),transparent)"></div>
+    <div class="card-title" style="color:var(--gold);margin-bottom:18px">New Plan <span id="f-edit-label" style="display:none;color:var(--text3);font-style:normal;font-size:9px;letter-spacing:1px">&mdash; editing</span></div>
+
+    <!-- Row 1: Title + Format -->
+    <div class="form-row" style="margin-bottom:12px">
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Title *</label>
+        <input autocomplete="off" class="form-input" id="f-title" placeholder="Plan name"/>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Format</label>
+        <select class="form-select" id="f-type" onchange="updateFormHint()">
+          <option value="checklist">Checklist</option>
+          <option value="table">Table (Item + Price)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Row 2: Priority -->
+    <div class="form-row" style="margin-bottom:12px">
+      <div class="form-group" style="margin-bottom:0;grid-column:1/-1">
+        <label class="form-label">Priority</label>
+        <select class="form-select" id="f-priority">
+          <option value="normal">Normal</option>
+          <option value="high">— High Priority</option>
+          
+        </select>
+      </div>
+    </div>
+
+    <!-- Content (checklist mode) -->
+    <div id="f-desc-wrap" class="form-group" style="margin-bottom:12px">
+      <label class="form-label" id="f-desc-label">Items &mdash; one per line</label>
+      <textarea autocomplete="off" class="form-textarea" id="f-desc" style="min-height:90px" placeholder="One item per line"></textarea>
+    </div>
+
+    <!-- Table builder (table mode) -->
+    <div id="f-table-builder" class="table-builder" style="margin-bottom:12px">
+      <div class="table-header-row">
+        <div class="table-col-label">Item Name</div>
+        <div class="table-col-label">Price ($)</div>
+      </div>
+      <div id="f-table-rows"></div>
+      <button class="btn-add-row" onclick="addTableRow()">+ Add Row</button>
+    </div>
+
+
+
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="save-btn" onclick="savePlan()" style="background:var(--gold);color:var(--obsidian);border:none;padding:11px 24px;border-radius:12px;font-family:var(--font-sans);font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .25s;text-transform:uppercase">Save Plan</button>
+      <button onclick="clearPlanForm();toggleCreatePlan(false)" style="background:none;color:var(--text3);border:1px solid var(--border2);padding:11px 18px;border-radius:12px;font-family:var(--font-sans);font-size:12px;cursor:pointer;transition:all .2s">Cancel</button>
+      <div id="f-type-hint" style="font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:1px;margin-left:4px">One item per line, ticking tracks your progress</div>
+    </div>
+    <div id="f-save-error" style="display:none;font-family:var(--font-mono);font-size:10px;color:#e05050;letter-spacing:1px;margin-top:10px;padding:8px 12px;background:rgba(224,80,80,0.08);border:1px solid rgba(224,80,80,0.2);border-radius:8px"></div>
+  </div>
+  </div>
+
+  <!-- PLAN GRID -->
+  <div class="phone-hide" style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+    <div style="flex:1;min-width:180px;position:relative">
+      <input autocomplete="off" id="plan-search" type="text" placeholder="Search plans…" oninput="renderPlans()" style="width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);border-radius:10px;padding:9px 14px 9px 34px;font-family:var(--font-mono);font-size:11px;outline:none;transition:border-color .2s;box-sizing:border-box" onfocus="this.style.borderColor='rgba(180,50,50,0.5)'" onblur="this.style.borderColor='var(--border2)'"/>
+      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:12px;pointer-events:none">⌕</span>
+    </div>
+    <select id="plan-filter-type" onchange="renderPlans()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text3);border-radius:10px;padding:9px 12px;font-family:var(--font-mono);font-size:10px;outline:none;cursor:pointer">
+      <option value="">All formats</option>
+      <option value="checklist">Checklist</option>
+      <option value="table">Table</option>
+    </select>
+    <select id="plan-filter-priority" onchange="renderPlans()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text3);border-radius:10px;padding:9px 12px;font-family:var(--font-mono);font-size:10px;outline:none;cursor:pointer">
+      <option value="">All priorities</option>
+      <option value="high">High Priority</option>
+      <option value="normal">Normal</option>
+    </select>
+    <div id="all-plan-count" style="font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:2px;white-space:nowrap">0 plans</div>
+  </div>
+  <div class="plan-grid" id="all-plan-grid"></div>
+  <div class="empty-state" id="all-plan-empty">
+    <div class="empty-glyph" style="color:rgba(180,50,50,0.3)">&#x25C8;</div>
+    <div class="empty-text">No plans yet &mdash; create one in Other Plans</div>
+  </div>
+
+  <!-- COMPLETED PLANS -->
+  <div id="completed-plans-section" style="display:none;margin-top:32px">
+    <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:var(--sage);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px">
+      <span>Completed Plans</span>
+      <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(76,175,125,0.3),transparent)"></div>
+      <span id="completed-count" style="color:var(--text3)">0</span>
+    </div>
+    <div class="plan-grid" id="completed-plan-grid"></div>
+  </div>
+</div>
+
+<!-- view-new removed: creation is now inline in view-all -->
+
+<!-- ══════════════════════════════════════
+     VIEW: RECENTLY DELETED
+══════════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     VIEW: TROPHIES
+══════════════════════════════════════ -->
+<div class="view" id="view-trophies">
+  <div class="page-header reveal">
+    <div class="page-eyebrow">Hall of Fame</div>
+    <div class="page-title">Trophies</div>
+    <div class="page-sub">Every win. Every payout. Every achievement.</div>
+  </div>
+
+  <!-- GREEN FN SECTION -->
+  <div class="card reveal reveal-delay-1" style="margin-bottom:24px;border-color:rgba(76,175,125,0.25)">
+    <div class="card-accent-line" style="background:linear-gradient(180deg,transparent,var(--sage),transparent)"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:var(--sage);margin-bottom:6px">PAYOUTS &amp; WINS</div>
+        <div style="font-family:var(--font-serif);font-size:28px;font-weight:900;font-style:normal;color:var(--sage)">GREEN FN</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);letter-spacing:2px;margin-bottom:4px">TOTAL LOGGED</div>
+        <div style="font-family:var(--font-serif);font-size:32px;font-weight:900;font-style:normal;color:var(--sage)" id="trophy-total">$0</div>
+      </div>
+    </div>
+    <div id="milestone-wrap" style="margin:-6px 0 18px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+        <div id="ms-label" style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3)">NEXT: $1,000</div>
+        <div id="ms-pct" style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--gold)">0%</div>
+      </div>
+      <div style="height:6px;border-radius:3px;background:var(--surface2);overflow:hidden">
+        <div id="ms-fill" style="height:100%;width:0%;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .6s var(--ease-silk)"></div>
+      </div>
+    </div>
+
+    <!-- Add payout form -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="numOnlyNeg(this)" pattern="[0-9.]*" inputmode="decimal" id="trophy-amount" type="text" class="form-input" placeholder="Amount"/>
+      <select id="trophy-firm" class="form-select" style="font-family:var(--font-serif);font-style:normal;color:var(--gold)">
+      <option value="">Category…</option>
+      <option value="Trading">Trading</option>
+      <option value="Investments">Investments</option>
+    </select>
+    </div>
+    <button onclick="logTrophy()" style="width:100%;background:rgba(76,175,125,0.12);border:1px solid rgba(76,175,125,0.35);color:var(--sage);padding:11px;border-radius:12px;font-family:var(--font-sans);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:1px">+ Log Payout</button>
+
+    <!-- Entries list -->
+    <div style="display:flex;align-items:center;justify-content:flex-end;margin-top:20px;margin-bottom:8px">
+      <button id="trophy-edit-btn" onclick="toggleTrophyEdit()" style="background:none;border:1px solid var(--border2);color:var(--text3);padding:5px 12px;border-radius:8px;font-family:var(--font-mono);font-size:9px;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s">&#x270E; Edit</button>
+    </div>
+    <div id="trophy-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    <div id="trophy-empty" style="text-align:center;padding:32px 0;font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:2px">No wins logged yet &mdash; keep going</div>
+  </div>
+</div>
+
+<div class="view" id="view-trash">
+  <div class="page-header reveal" style="margin-bottom:28px">
+    <div class="page-eyebrow">Recovery</div>
+    <div class="page-title">Recently Deleted</div>
+  </div>
+  <div class="card reveal reveal-delay-1" style="border-color:rgba(180,50,50,0.2);max-width:680px">
+    <div class="card-accent-line" style="background:linear-gradient(180deg,transparent,#b43232,#e05050,transparent)"></div>
+    <div class="card-title" style="color:#e05050;margin-bottom:16px">Trash <span style="color:var(--text3);font-style:normal;font-size:9px;letter-spacing:1px">&mdash; recover or permanently delete</span></div>
+    <div id="trash-content"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     VIEW: INVEST DETAIL
+══════════════════════════════════════ -->
+<div class="view" id="view-invest-detail">
+  <div class="page-header reveal" style="margin-bottom:36px">
+    <div class="page-title" id="detail-name" style="font-size:clamp(40px,6vw,72px);line-height:1;margin-bottom:8px"></div>
+    <div class="page-eyebrow" id="detail-eyebrow" style="margin-top:0">Investment</div>
+  </div>
+
+  <div class="stat-grid" style="grid-template-columns:1fr 1fr;margin-top:12px;margin-bottom:0"></div>
+
+  <div id="amount-editor-wrap" style="display:none;background:var(--surface2);border:1px solid var(--border2);border-radius:14px;padding:16px 20px;margin-bottom:20px">
+    <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-bottom:10px">EDIT INVESTMENT AMOUNT</div>
+    <div style="display:flex;gap:8px">
+      <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="numOnlyNeg(this)" pattern="[0-9.]*" inputmode="decimal" id="amount-editor-input" type="text" class="form-input" style="flex:1" placeholder="New amount ($)"/>
+      <button onclick="applyInvestAmount()" class="btn-gold-sm">Apply</button>
+      <button onclick="document.getElementById('amount-editor-wrap').style.display='none'" style="background:none;border:1px solid var(--border2);color:var(--text3);padding:0 12px;border-radius:10px;font-family:var(--font-sans);font-size:11px;cursor:pointer">Cancel</button>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:20px">
+    <div class="card" id="detail-breakdown">
+      <div class="card-accent-line"></div>
+      <div class="card-title azure">Investment Breakdown</div>
+      <div id="detail-breakdown-body"></div>
+    </div>
+    <div class="card" id="detail-saved-card">
+      <div class="card-accent-line"></div>
+      <div class="card-title sage">Returns Tracker</div>
+      <div id="detail-saved-body"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent-line"></div>
+    <div class="card-title" style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">
+      <span>Monthly Returns</span>
+      <button id="chart-edit-btn" onclick="toggleChartEditor()" style="background:none;border:1px solid var(--border2);color:var(--text3);padding:5px 14px;border-radius:8px;font-family:var(--font-mono);font-size:9px;letter-spacing:1px;cursor:pointer;transition:all .2s;text-transform:uppercase">&#x270E; Edit</button>
+    </div>
+    <!-- Year selector -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:16px">
+      <button onclick="chartYearStep(-1)" style="background:none;border:1px solid var(--border2);color:var(--text3);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s">&#x2039;</button>
