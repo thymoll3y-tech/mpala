@@ -4308,7 +4308,7 @@ function renderPlans(){
   var ovEmpty=document.getElementById('ov-plan-empty');
   if(ovGrid){
     ovGrid.innerHTML='';
-    var ovList=[...plans].filter(function(p){return !p.completed;}).reverse().slice(0,6);
+    var ovList=[...plans].filter(function(p){return !p.completed;}).sort(function(a,b){return (b.updatedAt||b.id)-(a.updatedAt||a.id);}).slice(0,6);
     var ovCount=document.getElementById('ov-plan-count');
     if(ovCount){ var n=plans.filter(function(p){return !p.completed;}).length; ovCount.textContent=n+' '+(n===1?'plan':'plans'); }
     if(!ovList.length){ if(ovEmpty) ovEmpty.style.display='block'; }
@@ -4348,7 +4348,10 @@ function renderPlans(){
 
   var pinned=applyFilters(active.filter(function(p){return p.pinned;}));
   var unpinned=applyFilters(active.filter(function(p){return !p.pinned;}));
-  var filtered=pinned.concat(unpinned.reverse());
+  var byRecency=function(a,b){return (b.updatedAt||b.id)-(a.updatedAt||a.id);};
+  pinned.sort(byRecency);
+  unpinned.sort(byRecency);
+  var filtered=pinned.concat(unpinned);
 
   var n=plans.length;
   if(countEl) countEl.textContent=n+' '+(n===1?'plan':'plans');
@@ -4369,7 +4372,7 @@ function renderPlans(){
       grid.appendChild(divider);
     }
   }
-  unpinned.reverse().forEach(function(p){grid.appendChild(makePlanCard(p));});
+  unpinned.forEach(function(p){grid.appendChild(makePlanCard(p));});
 
   // Completed section
   if(completed.length){
@@ -4387,12 +4390,13 @@ function renderPlans(){
       compGrid.style.display=compVisible?'grid':'none';
     };
     compGrid.style.display='none';
-    completed.forEach(function(p){compGrid.appendChild(makePlanCard(p));});
+    completed.sort(byRecency).forEach(function(p){compGrid.appendChild(makePlanCard(p));});
     compWrap.appendChild(compHeader);
     compWrap.appendChild(compGrid);
     grid.appendChild(compWrap);
   }
 }
+
 
 // ─────────────────────────────────────────────────────────────
 // MAKE PLAN CARD
@@ -4595,6 +4599,7 @@ function savePlan(){
       plans[idx].note='';
       plans[idx].checked={};
       plans[idx].updated=now;
+                  plans[idx].updatedAt=Date.now();
     }
     document.getElementById('f-title').removeAttribute('data-edit-id');
   } else {
@@ -4603,7 +4608,7 @@ function savePlan(){
       priority:priority,tags:tags,note:'',
       dueDate:null,
       progress:0,checked:{},pinned:false,completed:false,
-      date:now
+      date:now,updatedAt:Date.now()
     });
   }
   localStorage.setItem('cmd_plans',JSON.stringify(plans));stampSection('plans');
