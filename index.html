@@ -9511,7 +9511,81 @@ function tapeOffset(offset, time){
 // Curated weekly US economic calendar — manually updated.
 // Source: Forex Factory / MarketWatch, week of Jun 15-19, 2026.
 // Update TAPE_DATA_UPDATED and the events below each week (or as needed).
-const TAPE_DATA_UPDATED = 'Jun 14, 2026';
+const TAPE_DATA_UPDATED = 'Jun 16, 2026';
+
+
+
+
+const TAPE_SAMPLE_EVENTS = [
+  // Mon Jun 16 (today)
+  { dateStr:'2026-06-16', time:'08:30', title:'ADP Weekly Employment Change', impact:'orange', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-16', time:'08:30', title:'Building Permits', impact:'orange', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-16', time:'08:30', title:'Housing Starts', impact:'orange', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-16', time:'08:30', title:'Import Prices m/m', impact:'grey', actual:null, forecast:'—', previous:'—' },
+
+
+
+
+  // Tue Jun 17
+  { dateStr:'2026-06-17', time:'08:30', title:'Core Retail Sales m/m', impact:'orange', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-17', time:'08:30', title:'Retail Sales m/m', impact:'red', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-17', time:'10:00', title:'Business Inventories m/m', impact:'grey', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-17', time:'10:00', title:'Pending Home Sales m/m', impact:'grey', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-17', time:'10:30', title:'Crude Oil Inventories', impact:'grey', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-17', time:'14:00', title:'Federal Funds Rate', impact:'red', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-17', time:'14:00', title:'FOMC Economic Projections', impact:'red', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-17', time:'14:00', title:'FOMC Statement', impact:'red', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-17', time:'14:30', title:'FOMC Press Conference', impact:'red', actual:null, forecast:'—', previous:'—' },
+
+
+
+
+  // Thu Jun 18 (note: Jun 19 is Juneteenth bank holiday)
+  { dateStr:'2026-06-18', time:'08:30', title:'Philly Fed Manufacturing Index', impact:'orange', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-18', time:'08:30', title:'Unemployment Claims', impact:'orange', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-18', time:'10:00', title:'CB Leading Index m/m', impact:'grey', actual:null, forecast:'—', previous:'—' },
+
+
+
+
+  // Fri Jun 19 — Juneteenth, markets closed
+  { dateStr:'2026-06-19', time:'00:00', title:'Bank Holiday — Juneteenth', impact:'grey', actual:null, forecast:'—', previous:'—' },
+
+
+
+
+  // Tue Jun 23
+  { dateStr:'2026-06-23', time:'08:15', title:'ADP Non-Farm Employment Change', impact:'orange', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-23', time:'09:45', title:'Flash Manufacturing PMI', impact:'orange', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-23', time:'09:45', title:'Flash Services PMI', impact:'orange', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-23', time:'10:00', title:'Richmond Manufacturing Index', impact:'grey', actual:null, forecast:'—', previous:'—' },
+
+
+
+
+  // Wed Jun 24
+  { dateStr:'2026-06-24', time:'08:30', title:'Current Account', impact:'grey', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-24', time:'10:00', title:'New Home Sales', impact:'orange', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-24', time:'10:30', title:'Crude Oil Inventories', impact:'grey', actual:null, forecast:'—', previous:'—' },
+
+
+
+
+  // Thu Jun 25
+  { dateStr:'2026-06-25', time:'08:30', title:'Core PCE Price Index m/m', impact:'red', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-25', time:'08:30', title:'Final GDP q/q', impact:'red', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-25', time:'08:30', title:'Unemployment Claims', impact:'orange', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-25', time:'08:30', title:'Durable Goods Orders m/m', impact:'orange', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-25', time:'08:30', title:'Personal Income m/m', impact:'grey', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-25', time:'08:30', title:'Personal Spending m/m', impact:'grey', actual:null, forecast:'—', previous:'—' },
+
+
+
+
+  // Fri Jun 26
+  { dateStr:'2026-06-26', time:'08:30', title:'Goods Trade Balance', impact:'grey', actual:null, forecast:'—', previous:'—' },
+  { dateStr:'2026-06-26', time:'10:00', title:'Revised UoM Consumer Sentiment', impact:'orange', actual:null, forecast:'—', previous:'—' },
+];
 
 const TAPE_SAMPLE_EVENTS = [
   // --- Monday 6/15 ---
