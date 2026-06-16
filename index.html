@@ -9678,23 +9678,6 @@ function tapeMergeWithSample(liveEvents){
 
 
 
-function tapeMergeWithSample(liveEvents){
-  const liveDates = new Set(liveEvents.map(e => e.dateStr));
-  const sampleFill = tapeSampleAsEvents().filter(e => !liveDates.has(e.dateStr));
-  return [...liveEvents, ...sampleFill];
-}
-
-
-
-
-function tapeMergeWithSample(liveEvents){
-  const liveDates = new Set(liveEvents.map(e => e.dateStr));
-  const sampleFill = tapeSampleAsEvents().filter(e => !liveDates.has(e.dateStr));
-  return [...liveEvents, ...sampleFill];
-}
-
-
-
 
 function tapeMapJBEvent(row){
 
