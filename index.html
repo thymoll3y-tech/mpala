@@ -7249,10 +7249,8 @@ function init(){
   initScrollNav();
   initScrollTitle();
   updateFloatNav('overview');
-  initAllCounters();
   checkDailyReset();
   updateMonthlyDisplay();
-  updateMDPPhase();
   updateDashboardExtras();
   syncOverviewMDP();
   restoreDailyChecklistState();
@@ -7261,6 +7259,8 @@ function init(){
   updateConfGrade();
   restoreMDPChecklistState();
   restoreScalingChecklistState();
+  initAllCounters();
+updateMDPPhase();
   renderWeeklyReviews();
   renderWeeklyReviewStats();
   renderJournalSummary();
