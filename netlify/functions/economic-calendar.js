@@ -2,22 +2,25 @@ const https = require('https');
 
 exports.handler = async (event) => {
   const apiKey = process.env.JBLANKED_API_KEY;
-  
+
   if (!apiKey) {
     return {
       statusCode: 500,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
       body: JSON.stringify({ error: 'API key not configured' })
     };
   }
 
-  return new Promise((resolve, reject) => {
+  const today = new Date().toISOString().slice(0, 10);
+  const end = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
+  const path = `/news/api/forex-factory/calendar/range/?currency=USD&start=${today}&end=${end}`;
+
+  return new Promise((resolve) => {
     const options = {
       hostname: 'www.jblanked.com',
-      path: `/news/api/forex-factory/calendar/range/?currency=USD&start=${new Date().toISOString().slice(0,10)}&end=${new Date(Date.now()+7*86400000).toISOString().slice(0,10)}`,
+      path,
       method: 'GET',
-      headers: {
-        'Authorization': `Api-Key ${apiKey}`
-      }
+      headers: { 'Authorization': `Api-Key ${apiKey}` }
     };
 
     https.request(options, (res) => {
@@ -35,7 +38,7 @@ exports.handler = async (event) => {
           resolve({
             statusCode: 200,
             headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-            body: JSON.stringify({ error: 'Parse error', fetchedAt: Date.now() })
+            body: JSON.stringify({ error: 'Parse error', raw: data.slice(0, 200) })
           });
         }
       });
