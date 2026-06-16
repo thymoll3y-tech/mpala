@@ -32,7 +32,7 @@ exports.handler = async (event) => {
           resolve({
             statusCode: 200,
             headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-            body: JSON.stringify({ events: parsed.events || parsed, fetchedAt: Date.now(), source: 'live' })
+            body: JSON.stringify({ events: Array.isArray(parsed) ? parsed : (parsed.events || []), fetchedAt: Date.now(), source: 'live' })
           });
         } catch (e) {
           resolve({

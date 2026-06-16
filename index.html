@@ -9608,7 +9608,7 @@ const TAPE_TODAY_STR = (function(dt){
 // ============================================================
 const TAPE_LIVE_ENDPOINT = '/.netlify/functions/economic-calendar';
 const TAPE_CACHE_KEY = 'tape_calendar_cache_v2';
-const TAPE_CACHE_MAX_AGE = 0; // 20h — stay under 1 req/day
+const TAPE_CACHE_MAX_AGE = 20 * 60 * 60 * 1000; // 20h — stay under 1 req/day
 
 // JBlanked impact strings -> folder colors
 function tapeMapImpact(raw){
