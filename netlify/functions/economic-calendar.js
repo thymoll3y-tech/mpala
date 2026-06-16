@@ -13,7 +13,7 @@ exports.handler = async (event) => {
 
   const today = new Date().toISOString().slice(0, 10);
   const end = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
-  const path = `/news/api/forex-factory/calendar/range/?currency=USD&start=${today}&end=${end}`;
+  const path = `/news/api/forex-factory/calendar/range/?currency=USD&from=${today}&to=${end}`;
 
   return new Promise((resolve) => {
     const options = {
