@@ -5333,10 +5333,10 @@ function renderJournalSummary(){
   if(doneThisWeek){
     reviewLabel='REVIEWED'; reviewColor='var(--sage)';
   } else if(inReviewWindow){
-    reviewLabel='REVIEW DUE'; reviewColor='var(--gold)';
+    reviewLabel='REVIEW WINDOW'; reviewColor='var(--gold)';
   } else {
     var daysToFri=5-day; // Mon=1->4, Tue=2->3, Wed=3->2, Thu=4->1
-    reviewLabel='DUE IN '+daysToFri+'D'; reviewColor='var(--text3)';
+    reviewLabel=daysToFri+'D LEFT'; reviewColor='var(--text3)';
   }
 
   var cell=function(value,color,label,labelColor){
@@ -6266,7 +6266,7 @@ function restoreScalingChecklistState(){
   });
 }
 function checkDailyReset(){const today=new Date().toDateString();const last=localStorage.getItem('cmd_last_day');if(last!==today){localStorage.setItem('cmd_last_day',today);resetDailyChecklists();}}
-function resetDailyChecklists(){const dv=document.getElementById('view-daily');if(!dv)return;dv.querySelectorAll('li.checked').forEach(function(li){li.classList.remove('checked');});localStorage.removeItem('cmd_daily_checks');localStorage.removeItem('cmd_trades');buildTradeDots();updateOverviewDaily();initAllCounters();}
+function resetDailyChecklists(){const dv=document.getElementById('view-daily');if(!dv)return;dv.querySelectorAll('li.checked').forEach(function(li){li.classList.remove('checked');});localStorage.removeItem('cmd_daily_checks');buildTradeDots();updateOverviewDaily();initAllCounters();}
 
 // ════════════════ TRADE DOTS ════════════════
 function buildTradeDots(){
