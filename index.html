@@ -9517,7 +9517,11 @@ const TAPE_DATA_UPDATED = 'Jun 16, 2026';
 
 
 const TAPE_SAMPLE_EVENTS = [
-  // Mon Jun 16 (today)
+
+
+
+
+
   { dateStr:'2026-06-16', time:'08:30', title:'ADP Weekly Employment Change', impact:'orange', actual:null, forecast:'—', previous:'—' },
   { dateStr:'2026-06-16', time:'08:30', title:'Building Permits', impact:'orange', actual:null, forecast:'—', previous:'—' },
   { dateStr:'2026-06-16', time:'08:30', title:'Housing Starts', impact:'orange', actual:null, forecast:'—', previous:'—' },
@@ -9587,32 +9591,6 @@ const TAPE_SAMPLE_EVENTS = [
   { dateStr:'2026-06-26', time:'10:00', title:'Revised UoM Consumer Sentiment', impact:'orange', actual:null, forecast:'—', previous:'—' },
 ];
 
-const TAPE_SAMPLE_EVENTS = [
-  // --- Monday 6/15 ---
-  { ...tapeOffset(1,'08:30'), title:'Empire State Manufacturing Index', impact:'orange', actual:null, forecast:'—', previous:'—' },
-  { ...tapeOffset(1,'09:15'), title:'Industrial Production m/m', impact:'orange', actual:null, forecast:'—', previous:'—' },
-  { ...tapeOffset(1,'09:15'), title:'Capacity Utilization', impact:'grey', actual:null, forecast:'—', previous:'—' },
-  { ...tapeOffset(1,'10:00'), title:'NAHB Housing Market Index', impact:'grey', actual:null, forecast:'—', previous:'—' },
-
-  // --- Tuesday 6/16 ---
-  { ...tapeOffset(2,'08:30'), title:'Import Price Index m/m', impact:'grey', actual:null, forecast:'—', previous:'—' },
-  { ...tapeOffset(2,'08:30'), title:'Housing Starts', impact:'orange', actual:null, forecast:'—', previous:'—' },
-  { ...tapeOffset(2,'08:30'), title:'Building Permits', impact:'orange', actual:null, forecast:'—', previous:'—' },
-
-  // --- Wednesday 6/17 ---
-  { ...tapeOffset(3,'08:30'), title:'Retail Sales m/m', impact:'red', actual:null, forecast:'—', previous:'—' },
-  { ...tapeOffset(3,'10:00'), title:'Pending Home Sales', impact:'grey', actual:null, forecast:'—', previous:'—' },
-  { ...tapeOffset(3,'10:00'), title:'Business Inventories m/m', impact:'grey', actual:null, forecast:'—', previous:'—' },
-  { ...tapeOffset(3,'14:00'), title:'FOMC Interest Rate Decision', impact:'red', actual:null, forecast:'—', previous:'—' },
-  { ...tapeOffset(3,'14:30'), title:'Fed Chair Press Conference', impact:'red', actual:null, forecast:'—', previous:'—' },
-
-  // --- Thursday 6/18 ---
-  { ...tapeOffset(4,'08:30'), title:'Initial Jobless Claims', impact:'red', actual:null, forecast:'—', previous:'—' },
-  { ...tapeOffset(4,'08:30'), title:'Philadelphia Fed Manufacturing Index', impact:'orange', actual:null, forecast:'—', previous:'—' },
-
-  // --- Friday 6/19 ---
-  { ...tapeOffset(5,'00:00'), title:'Markets Closed — Juneteenth Holiday', impact:'grey', actual:null, forecast:'—', previous:'—' },
-];
 
 const TAPE_TODAY_STR = (function(dt){
   const y = dt.getFullYear(), m=String(dt.getMonth()+1).padStart(2,'0'), day=String(dt.getDate()).padStart(2,'0');
