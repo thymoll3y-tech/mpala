@@ -2698,6 +2698,78 @@ body.phone-mode .topbar { padding-top: calc(8px + 1.1cm) !important; }
   outline: 2px solid var(--gold);
   outline-offset: -2px;
 }
+.pnl-payout {
+  background: rgba(94,201,160,0.10);
+  border: 1px solid rgba(94,201,160,0.28) !important;
+}
+.pnl-payout .pnl-cell-date { color: rgba(94,201,160,0.9); opacity: 1; }
+.pnl-payout-marker {
+  font-size: 10px;
+  color: rgba(94,201,160,0.85);
+  line-height: 1;
+  display: block;
+  margin-top: 1px;
+}
+.pnl-payout {
+  background: rgba(94,201,160,0.10);
+  border: 1px solid rgba(94,201,160,0.28) !important;
+}
+.pnl-payout .pnl-cell-date { color: rgba(94,201,160,0.9); opacity: 1; }
+.pnl-payout-marker {
+  font-size: 10px;
+  color: rgba(94,201,160,0.85);
+  line-height: 1;
+  display: block;
+  margin-top: 1px;
+}
+.pnl-payout {
+  background: rgba(94,201,160,0.10);
+  border: 1px solid rgba(94,201,160,0.28) !important;
+}
+.pnl-payout .pnl-cell-date { color: rgba(94,201,160,0.9); opacity: 1; }
+.pnl-payout-marker {
+  font-size: 10px;
+  color: rgba(94,201,160,0.85);
+  line-height: 1;
+  display: block;
+  margin-top: 1px;
+}
+.pnl-payout {
+  background: rgba(94,201,160,0.10);
+  border: 1px solid rgba(94,201,160,0.28) !important;
+}
+.pnl-payout .pnl-cell-date { color: rgba(94,201,160,0.9); opacity: 1; }
+.pnl-payout-marker {
+  font-size: 10px;
+  color: rgba(94,201,160,0.85);
+  line-height: 1;
+  display: block;
+  margin-top: 1px;
+}
+.pnl-payout {
+  background: rgba(94,201,160,0.10);
+  border: 1px solid rgba(94,201,160,0.28) !important;
+}
+.pnl-payout .pnl-cell-date { color: rgba(94,201,160,0.9); opacity: 1; }
+.pnl-payout-marker {
+  font-size: 10px;
+  color: rgba(94,201,160,0.85);
+  line-height: 1;
+  display: block;
+  margin-top: 1px;
+}
+.pnl-payout {
+  background: rgba(94,201,160,0.10);
+  border: 1px solid rgba(94,201,160,0.28) !important;
+}
+.pnl-payout .pnl-cell-date { color: rgba(94,201,160,0.9); opacity: 1; }
+.pnl-payout-marker {
+  font-size: 10px;
+  color: rgba(94,201,160,0.85);
+  line-height: 1;
+  display: block;
+  margin-top: 1px;
+}
 
 
 /* ── VIEW FADE TRANSITION ── */
@@ -3219,6 +3291,22 @@ body.phone-mode .topbar { padding-top: calc(8px + 1.1cm) !important; }
     </div>
   </div>
 
+  <!-- HOME TRADING BAR -->
+  <div class="card gap-top reveal" id="home-trading-bar" style="padding:20px">
+    <div class="card-accent-line" style="background:linear-gradient(180deg,transparent,rgba(94,201,160,0.6),var(--gold),transparent)"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:var(--gold)">TRADING</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onclick="event.stopPropagation();htbYearStep(-1)" style="background:none;border:1px solid var(--border2);color:var(--text3);width:26px;height:26px;border-radius:7px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center">&#x2039;</button>
+        <span id="htb-year-label" style="font-family:var(--font-serif);font-size:17px;font-weight:700;color:var(--gold);min-width:48px;text-align:center">2026</span>
+        <button onclick="event.stopPropagation();htbYearStep(1)" style="background:none;border:1px solid var(--border2);color:var(--text3);width:26px;height:26px;border-radius:7px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center">&#x203A;</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px" id="htb-stats"></div>
+    <div style="position:relative;height:80px;display:flex;align-items:flex-end;gap:4px;padding-top:6px" id="htb-chart"></div>
+    <div style="display:flex;justify-content:space-between;margin-top:4px;font-family:var(--font-mono);font-size:8px;color:var(--text3)" id="htb-labels"></div>
+  </div>
+
   <!-- PNL CALENDAR -->
   <div class="card gap-top reveal" id="pnl-calendar-card" >
     <div class="card-section-head">
@@ -3250,7 +3338,12 @@ body.phone-mode .topbar { padding-top: calc(8px + 1.1cm) !important; }
       <div id="eq-total" style="font-family:var(--font-serif);font-size:34px;font-weight:700;color:var(--gold);line-height:1">$0</div>
       <div id="eq-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px"></div>
     </div>
-    <div id="eq-chart-wrap" style="margin-top:14px">
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin:8px 0 4px">
+      <button onclick="eqYearStep(-1)" style="background:none;border:1px solid var(--border2);color:var(--text3);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .2s">&#x2039;</button>
+      <span id="eq-year-label" style="font-family:var(--font-serif);font-size:18px;font-weight:700;color:var(--gold);letter-spacing:1px;min-width:54px;text-align:center">2026</span>
+      <button onclick="eqYearStep(1)" style="background:none;border:1px solid var(--border2);color:var(--text3);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .2s">&#x203A;</button>
+    </div>
+    <div id="eq-chart-wrap" style="margin-top:10px">
       <svg id="eq-chart" viewBox="0 0 600 180" preserveAspectRatio="none" style="width:100%;height:150px;display:block"></svg>
     </div>
     <div id="eq-empty" style="display:none;font-family:var(--font-mono);font-size:11px;color:var(--text3);padding:24px 0;text-align:center">No trades logged yet</div>
@@ -3493,7 +3586,12 @@ body.phone-mode .topbar { padding-top: calc(8px + 1.1cm) !important; }
       <div id="eq-total-jnl" style="font-family:var(--font-serif);font-size:34px;font-weight:700;color:var(--gold);line-height:1">$0</div>
       <div id="eq-sub-jnl" style="font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:1px"></div>
     </div>
-    <div id="eq-chart-wrap-jnl" style="margin-top:14px">
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin:8px 0 4px">
+      <button onclick="eqYearStep(-1)" style="background:none;border:1px solid var(--border2);color:var(--text3);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .2s">&#x2039;</button>
+      <span id="eq-year-label-jnl" style="font-family:var(--font-serif);font-size:18px;font-weight:700;color:var(--gold);letter-spacing:1px;min-width:54px;text-align:center">2026</span>
+      <button onclick="eqYearStep(1)" style="background:none;border:1px solid var(--border2);color:var(--text3);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .2s">&#x203A;</button>
+    </div>
+    <div id="eq-chart-wrap-jnl" style="margin-top:10px">
       <svg id="eq-chart-jnl" viewBox="0 0 600 180" preserveAspectRatio="none" style="width:100%;height:150px;display:block"></svg>
     </div>
     <div id="eq-empty-jnl" style="display:none;font-family:var(--font-mono);font-size:11px;color:var(--text3);padding:24px 0;text-align:center">No trades logged yet</div>
@@ -4824,14 +4922,22 @@ function pnlGetDayMap() {
   var map = {};
   trades.forEach(function(t) {
     if (!t.result || !t.date) return;
-    // Parse result: remove $ and commas, handle +/- prefix
     var val = parseFloat(String(t.result).replace(/[$,]/g, '').replace(/^\+/, ''));
     if (isNaN(val)) return;
-    // Parse date — stored as ISO string or legacy "May 29, 2026, 03:14 PM"
     var d = new Date(t.date);
     if (isNaN(d.getTime())) return;
     var key = localDateKey(d);
-    map[key] = (map[key] || 0) + val;
+    if (!map[key]) map[key] = {pnl: 0, payouts: 0};
+    map[key].pnl += val;
+  });
+  var trophies = JSON.parse(localStorage.getItem('cmd_trophies') || '[]');
+  trophies.forEach(function(t) {
+    if (!t.date || (t.firm||'').toLowerCase() !== 'trading') return;
+    var d = new Date(t.date);
+    if (isNaN(d.getTime())) return;
+    var key = localDateKey(d);
+    if (!map[key]) map[key] = {pnl: 0, payouts: 0};
+    map[key].payouts += (parseFloat(t.amount) || 0);
   });
   return map;
 }
@@ -4961,6 +5067,12 @@ function renderNetWorth(){
 }
 
 // ── Equity Curve ──
+var _eqYear=new Date().getFullYear();
+function eqYearStep(dir){
+  var thisYear=new Date().getFullYear();
+  _eqYear=Math.max(thisYear-5,Math.min(thisYear+1,_eqYear+dir));
+  renderEquityCurve();
+}
 function renderEquityCurve(){
   ['','-jnl'].forEach(function(suf){
   var svg=document.getElementById('eq-chart'+suf);
@@ -4968,11 +5080,20 @@ function renderEquityCurve(){
   var subEl=document.getElementById('eq-sub'+suf);
   var emptyEl=document.getElementById('eq-empty'+suf);
   var wrapEl=document.getElementById('eq-chart-wrap'+suf);
+  var yearEl=document.getElementById('eq-year-label'+(suf==='-jnl'?'-jnl':''));
+  if(yearEl) yearEl.textContent=String(_eqYear);
   if(!svg) return;
   var trades=[];
   try{trades=JSON.parse(localStorage.getItem('cmd_trade_journal')||'[]');}catch(e){}
   trades=trades.filter(function(t){return t&&t.id;}).sort(function(a,b){return a.id-b.id;});
-  if(!trades.length){
+  // Filter to selected year
+  var yearStart=new Date(_eqYear,0,1).getTime();
+  var yearEnd=new Date(_eqYear+1,0,1).getTime();
+  var yearTrades=trades.filter(function(t){return t.id>=yearStart&&t.id<yearEnd;});
+  var trophies=[];
+  try{trophies=JSON.parse(localStorage.getItem('cmd_trophies')||'[]');}catch(e){}
+  var tradingPayouts=trophies.filter(function(t){return t&&(t.firm||'').toLowerCase()==='trading'&&t.id>=yearStart&&t.id<yearEnd;}).sort(function(a,b){return a.id-b.id;});
+  if(!yearTrades.length&&!tradingPayouts.length){
     if(wrapEl)wrapEl.style.display='none';
     if(emptyEl)emptyEl.style.display='block';
     if(totalEl)totalEl.textContent='$0';
@@ -4981,20 +5102,38 @@ function renderEquityCurve(){
   }
   if(wrapEl)wrapEl.style.display='block';
   if(emptyEl)emptyEl.style.display='none';
-  var cum=0,pts=[0];
-  trades.forEach(function(t){cum+=parseFloat(t.result)||0;pts.push(cum);});
+  // Build unified timeline for this year
+  var timeline=[];
+  yearTrades.forEach(function(t){timeline.push({id:t.id,type:'trade',val:parseFloat(t.result)||0});});
+  tradingPayouts.forEach(function(t){timeline.push({id:t.id,type:'payout',val:parseFloat(t.amount)||0});});
+  timeline.sort(function(a,b){return a.id-b.id;});
+  var cum=0,pts=[0],payoutMarkers=[];
+  timeline.forEach(function(ev){
+    if(ev.type==='trade'){cum+=ev.val;}
+    else{payoutMarkers.push({idx:pts.length,val:ev.val,before:cum});cum-=ev.val;}
+    pts.push(cum);
+  });
+  var totalPnl=yearTrades.reduce(function(s,t){return s+(parseFloat(t.result)||0);},0);
+  var totalWithdrawn=tradingPayouts.reduce(function(s,t){return s+(parseFloat(t.amount)||0);},0);
   var min=Math.min.apply(null,pts),max=Math.max.apply(null,pts);
   if(min===max){min-=1;max+=1;}
   var W=600,H=180,pad=10;
   var n=pts.length;
-  var toX=function(i){return pad+(i/(n-1))*(W-2*pad);};
+  var toX=function(i){return pad+(i/(n-1||1))*(W-2*pad);};
   var toY=function(v){return H-pad-((v-min)/(max-min))*(H-2*pad);};
   var d='M'+toX(0)+' '+toY(pts[0]);
   for(var i=1;i<n;i++){d+=' L'+toX(i)+' '+toY(pts[i]);}
   var lineColor=cum>=0?'var(--sage)':'var(--rose)';
   var zeroY=toY(0);
   var area=d+' L'+toX(n-1)+' '+(H-pad)+' L'+toX(0)+' '+(H-pad)+' Z';
-  var gradId='eqgrad'+suf, glowId='eqglow'+suf;
+  var gradId='eqgrad'+suf,glowId='eqglow'+suf;
+  var payoutSVG=payoutMarkers.map(function(p){
+    var px=toX(p.idx),pyA=toY(pts[p.idx]);
+    var sz=6;
+    var tri='M'+(px-sz)+','+(pyA-sz*1.4)+' L'+(px+sz)+','+(pyA-sz*1.4)+' L'+px+','+(pyA+sz*0.6)+'Z';
+    return '<line x1="'+px+'" y1="'+toY(p.before)+'" x2="'+px+'" y2="'+pyA+'" stroke="rgba(94,201,160,0.6)" stroke-width="1.5" stroke-dasharray="4 2"/>'+
+           '<path d="'+tri+'" fill="rgba(94,201,160,0.9)"/>';
+  }).join('');
   svg.innerHTML=
     '<defs>'+
     '<linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
@@ -5009,14 +5148,85 @@ function renderEquityCurve(){
     (zeroY>pad&&zeroY<H-pad?'<line x1="'+pad+'" y1="'+zeroY+'" x2="'+(W-pad)+'" y2="'+zeroY+'" stroke="rgba(255,255,255,0.08)" stroke-width="1" stroke-dasharray="4 4"/>':'')+
     '<path d="'+area+'" fill="url(#'+gradId+')"/>'+
     '<path d="'+d+'" fill="none" stroke="'+lineColor+'" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" filter="url(#'+glowId+')"/>'+
+    payoutSVG+
     '<circle cx="'+toX(n-1)+'" cy="'+toY(cum)+'" r="9" fill="'+lineColor+'" opacity="0.18"/>'+
     '<circle cx="'+toX(n-1)+'" cy="'+toY(cum)+'" r="4.5" fill="'+lineColor+'" filter="url(#'+glowId+')"/>';
   if(totalEl){
     totalEl.textContent=(cum<0?'-$':'$')+Math.abs(Math.round(cum)).toLocaleString('en-US');
     totalEl.style.color=cum>=0?'var(--sage)':'var(--rose)';
   }
-  if(subEl)subEl.textContent=trades.length+' trades all time';
+  if(subEl){
+    var parts=[yearTrades.length+' trades'];
+    if(totalWithdrawn>0) parts.push('$'+Math.round(totalWithdrawn).toLocaleString('en-US')+' withdrawn');
+    subEl.textContent=parts.join(' \u00b7 ');
+  }
   });
+}
+
+// ── Home Trading Bar ──
+var _htbYear=new Date().getFullYear();
+function htbYearStep(dir){
+  var thisYear=new Date().getFullYear();
+  _htbYear=Math.max(thisYear-5,Math.min(thisYear+1,_htbYear+dir));
+  renderHomeTradingBar();
+}
+var HTB_MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function renderHomeTradingBar(){
+  var statsEl=document.getElementById('htb-stats');
+  var chartEl=document.getElementById('htb-chart');
+  var labelsEl=document.getElementById('htb-labels');
+  var yearEl=document.getElementById('htb-year-label');
+  if(!statsEl)return;
+  if(yearEl)yearEl.textContent=String(_htbYear);
+  var trades=[];
+  try{trades=JSON.parse(localStorage.getItem('cmd_trade_journal')||'[]');}catch(e){}
+  var trophies=[];
+  try{trophies=JSON.parse(localStorage.getItem('cmd_trophies')||'[]');}catch(e){}
+  var tradingPayouts=trophies.filter(function(t){return t&&(t.firm||'').toLowerCase()==='trading';});
+  var yearStart=new Date(_htbYear,0,1).getTime();
+  var yearEnd=new Date(_htbYear+1,0,1).getTime();
+  var yearTrades=trades.filter(function(t){return t&&t.id>=yearStart&&t.id<yearEnd;});
+  var wins=yearTrades.filter(function(t){return t.outcome==='Win';}).length;
+  var net=yearTrades.reduce(function(s,t){return s+(parseFloat(t.result)||0);},0);
+  var wr=yearTrades.length?Math.round(wins/yearTrades.length*100):0;
+  var yearPayouts=tradingPayouts.filter(function(t){return t.id>=yearStart&&t.id<yearEnd;});
+  var totalPayouts=yearPayouts.reduce(function(s,t){return s+(parseFloat(t.amount)||0);},0);
+  var fmt=function(v){return (v<0?'-$':'$')+Math.abs(Math.round(v)).toLocaleString('en-US');};
+  var cell=function(val,label,color){
+    return '<div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:9px 6px;text-align:center">'+
+      '<div style="font-family:var(--font-serif);font-size:15px;font-weight:700;font-style:normal;color:'+color+';line-height:1">'+val+'</div>'+
+      '<div style="font-family:var(--font-mono);font-size:8px;letter-spacing:0.5px;color:var(--text3);margin-top:3px">'+label+'</div></div>';
+  };
+  statsEl.innerHTML=
+    cell(yearTrades.length,'TRADES','var(--text)')+
+    cell(wr+'%','WIN RATE',wr>=50?'var(--sage)':'var(--rose)')+
+    cell(fmt(net),'NET P&L',net>=0?'var(--sage)':'var(--rose)')+
+    cell(fmt(totalPayouts),'PAYOUTS','var(--gold)');
+  // Monthly bar chart: P&L per month from trades
+  var monthPnl=new Array(12).fill(0);
+  yearTrades.forEach(function(t){
+    var m=new Date(t.id).getMonth();
+    monthPnl[m]+=(parseFloat(t.result)||0);
+  });
+  var maxAbs=Math.max.apply(null,monthPnl.map(Math.abs).concat([1]));
+  if(chartEl){
+    chartEl.innerHTML='';
+    if(labelsEl)labelsEl.innerHTML='';
+    monthPnl.forEach(function(val,i){
+      var heightPct=Math.max(4,Math.round((Math.abs(val)/maxAbs)*100));
+      var col=val>=0?'var(--sage)':'var(--rose)';
+      if(val===0)col='var(--border2)';
+      var bar=document.createElement('div');
+      bar.style.cssText='flex:1;height:'+heightPct+'%;border-radius:3px 3px 0 0;background:'+col+';opacity:'+(val!==0?'0.75':'0.3')+';transition:height .4s cubic-bezier(0.16,1,0.3,1)';
+      bar.title=HTB_MONTHS[i]+': '+fmt(val);
+      chartEl.appendChild(bar);
+      if(labelsEl){
+        var lbl=document.createElement('span');
+        lbl.textContent=HTB_MONTHS[i].slice(0,1);
+        labelsEl.appendChild(lbl);
+      }
+    });
+  }
 }
 
 // ── Trade Analytics ──
@@ -5370,7 +5580,7 @@ function pnlRender() {
   var startOffset = (firstDay === 0) ? 6 : firstDay - 1;
   var daysInMonth = new Date(_pnlYear, _pnlMonth + 1, 0).getDate();
 
-  var greenDays = 0, redDays = 0, netTotal = 0;
+  var greenDays = 0, redDays = 0, payoutDays = 0, netTotal = 0;
   grid.innerHTML = '';
 
   // Filler dates from previous month
@@ -5388,7 +5598,7 @@ function pnlRender() {
 
   for (var d = 1; d <= daysInMonth; d++) {
     var key = localDateKey(new Date(_pnlYear, _pnlMonth, d));
-    var val = dayMap[key];
+    var entry = dayMap[key];
     var isToday = (today.getFullYear() === _pnlYear && today.getMonth() === _pnlMonth && today.getDate() === d);
     var cell = document.createElement('div');
     cell.className = 'pnl-cell';
@@ -5401,16 +5611,28 @@ function pnlRender() {
     var valEl = document.createElement('div');
     valEl.className = 'pnl-cell-val';
 
-    if (val !== undefined) {
-      netTotal += val;
-      if (val >= 0) {
-        cell.classList.add('pnl-green');
-        greenDays++;
-        valEl.textContent = '$' + Math.abs(val).toLocaleString('en-US', {maximumFractionDigits:0});
-      } else {
-        cell.classList.add('pnl-red');
-        redDays++;
-        valEl.textContent = '-$' + Math.abs(val).toLocaleString('en-US', {maximumFractionDigits:0});
+    if (entry !== undefined) {
+      var pnl = entry.pnl || 0;
+      var payouts = entry.payouts || 0;
+      netTotal += pnl;
+      if (pnl !== 0) {
+        if (pnl >= 0) {
+          cell.classList.add('pnl-green');
+          greenDays++;
+          valEl.textContent = '$' + Math.abs(pnl).toLocaleString('en-US', {maximumFractionDigits:0});
+        } else {
+          cell.classList.add('pnl-red');
+          redDays++;
+          valEl.textContent = '-$' + Math.abs(pnl).toLocaleString('en-US', {maximumFractionDigits:0});
+        }
+      }
+      if (payouts > 0) {
+        payoutDays++;
+        if (pnl === 0) cell.classList.add('pnl-payout');
+        var payMarker = document.createElement('span');
+        payMarker.className = 'pnl-payout-marker';
+        payMarker.textContent = '\u2193';
+        cell.appendChild(payMarker);
       }
     }
 
@@ -5438,7 +5660,8 @@ function pnlRender() {
 
   // Stats
   var netStr = (netTotal >= 0 ? '$' : '-$') + Math.abs(netTotal).toLocaleString('en-US', {maximumFractionDigits:0});
-  statsEl.innerHTML = greenDays + ' green &nbsp;·&nbsp; ' + redDays + ' red<br>Net: <span style="color:' + (netTotal >= 0 ? 'var(--gold)' : 'var(--red)') + '">' + netStr + '</span>';
+  var payoutStr = payoutDays > 0 ? ' &nbsp;·&nbsp; ' + payoutDays + ' payout' + (payoutDays > 1 ? 's' : '') : '';
+  statsEl.innerHTML = greenDays + ' green &nbsp;·&nbsp; ' + redDays + ' red' + payoutStr + '<br>Net: <span style="color:' + (netTotal >= 0 ? 'var(--gold)' : 'var(--red)') + '">' + netStr + '</span>';
   // Keep performance section in lockstep with trade data
   try{renderEquityCurve();renderTradeAnalytics();renderWeeklyReviewStats();renderNetWorth();}catch(e){}
 }
@@ -7883,6 +8106,7 @@ function logTrophy(){
   renderTrophies();
   updateMonthlyDisplay();
   fireConfetti();
+  try{renderHomeTradingBar();renderEquityCurve();pnlRender();}catch(e){}
   if(window._kvPush) window._kvPush();
 }
 function deleteTrophy(id){
@@ -8157,6 +8381,7 @@ function updateDashboardExtras(){
   renderTradeJournal();
   loadStreak();
   loadMilestoneNotes();
+  try{renderHomeTradingBar();}catch(e){}
   var stamps=['money','plans','notes'];
   stamps.forEach(function(s){
     var el=document.getElementById('stamp-'+s);
