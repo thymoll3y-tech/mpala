@@ -240,7 +240,7 @@ window.addEventListener('unhandledrejection',function(e){ e.preventDefault(); })
               }
               if(_newTrophies!==_oldTrophies) renderTrophies();
               if(_newTrades!==_oldTrades){ renderTradeJournal();pnlRender();buildTradeDots();renderJournalSummary(); }
-              else { pnlRender(); } // always re-render calendar from current data
+              else { pnlRender();buildTradeDots(); } // always re-render calendar + dots from current data
               if(_newPlans!==_oldPlans){ renderPlans();renderIdeasPlans(); }
               if(_newNotes!==_oldNotes) renderNotes();
               if(_newChecks!==_oldChecks){ restoreDailyChecklistState();updateConfGrade(); }
@@ -6512,7 +6512,7 @@ function restoreScalingChecklistState(){
   });
 }
 function checkDailyReset(){const today=new Date().toDateString();const last=localStorage.getItem('cmd_last_day');if(last!==today){localStorage.setItem('cmd_last_day',today);resetDailyChecklists();}}
-function resetDailyChecklists(){const dv=document.getElementById('view-daily');if(!dv)return;dv.querySelectorAll('li.checked').forEach(function(li){li.classList.remove('checked');});localStorage.removeItem('cmd_daily_checks');buildTradeDots();updateOverviewDaily();initAllCounters();}
+function resetDailyChecklists(){const dv=document.getElementById('view-daily');if(!dv)return;dv.querySelectorAll('li.checked').forEach(function(li){li.classList.remove('checked');});localStorage.removeItem('cmd_daily_checks');updateOverviewDaily();initAllCounters();}
 
 // ════════════════ TRADE DOTS ════════════════
 function buildTradeDots(){
@@ -6526,15 +6526,10 @@ function buildTradeDots(){
     dot.title='Trade '+(i+1);
     (function(idx){dot.onclick=function(){
       const t=JSON.parse(localStorage.getItem('cmd_trades')||'[]');
-      // Can only tick if previous one is ticked (or it's the first)
-      if(!t[idx] && idx > 0 && !t[idx-1]) return;
-      // Can only untick if it's the last ticked one
-      if(t[idx]){
-        // Check nothing after this is ticked
-        for(var k=idx+1;k<20;k++){ if(t[k]) return; }
-      }
+      // Tap any dot to toggle it freely — no ordering restriction, no daily reset
       t[idx]=!t[idx];
       localStorage.setItem('cmd_trades',JSON.stringify(t));
+      if(window._kvPush) window._kvPush();
       buildTradeDots();
       renderJournalSummary();
     };})(i);
