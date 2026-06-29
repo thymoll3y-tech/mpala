@@ -22,7 +22,7 @@ window.addEventListener('unhandledrejection',function(e){ e.preventDefault(); })
   var SB_URL='https://hmtgwcfaoocacfipzrkl.supabase.co';
   var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtdGd3Y2Zhb29jYWNmaXB6cmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwNDAyMjgsImV4cCI6MjA5NjYxNjIyOH0.kGi2QU3sULJAGidDQY-RzqHpwPGqqcmem5OBQ3TyvS8';
   var HEADERS={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
-  var SKIP={'motion_auth':1,'cmd_kbd_seen':1,'cmd_phone_mode':1,'cmd_theme':1,'cmd_palette':1,'cmd_daily_collapsed':1,'_lastBackupDate':1,'cmd_lock_mode':1,'motion_passcode':1,'motion_password':1,'motion_bio':1,'motion_bio_cred_id':1,'cmd_chart_migrated_v1':1};
+  var SKIP={'motion_auth':1,'cmd_kbd_seen':1,'cmd_phone_mode':1,'cmd_theme':1,'cmd_palette':1,'cmd_daily_collapsed':1,'_lastBackupDate':1,'cmd_chart_migrated_v1':1};
   var _origSet=localStorage.setItem.bind(localStorage);
   var _origGet=localStorage.getItem.bind(localStorage);
   var _origClear=localStorage.clear.bind(localStorage);
@@ -3151,7 +3151,7 @@ body.phone-mode .topbar { padding-top: calc(8px + 1.1cm) !important; }
     </div>
 
   <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px">
-    <button onclick="logOut()" style="width:100%;background:var(--red-dim);border:1px solid rgba(154,32,32,0.25);color:var(--rose);padding:9px 0;border-radius:10px;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;cursor:pointer;transition:all .2s;text-transform:uppercase">Log Out</button>
+    <button onclick="openAccountPage()" style="width:100%;background:var(--gold-dim);border:1px solid rgba(212,98,42,0.25);color:var(--gold);padding:9px 0;border-radius:10px;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;cursor:pointer;transition:all .2s;text-transform:uppercase">⚙ Settings</button>
   </div>
 </aside>
 
@@ -9051,6 +9051,9 @@ function closeAccountPage(){
 function showApp(){
   _pcBuffer='';pcRenderDots('pcd-',0);
   var inp=document.getElementById('pw-auth-input');if(inp)inp.value='';
+  // Persist auth state so other devices auto-login
+  localStorage.setItem('motion_auth_synced','1');
+  if(window._kvPush) window._kvPush();
   var auth=document.getElementById('auth-screen');
   if(auth){auth.style.opacity='0';auth.style.transition='opacity .4s ease';setTimeout(function(){auth.style.display='none';auth.style.opacity='';auth.style.transition='';},400);}
   document.body.style.overflow='';
@@ -9077,6 +9080,8 @@ function logOut(){
   closeAccountPage();
   localStorage.removeItem(AUTH_KEY);
   localStorage.removeItem('motion_auth');
+  localStorage.removeItem('motion_auth_synced');
+  if(window._kvPush) window._kvPush();
   hideApp();
 }
 function initAuth(){
@@ -9087,8 +9092,11 @@ function initAuth(){
   if(!localStorage.getItem(PW_KEY))localStorage.setItem(PW_KEY,DEFAULT_PASSWORD);
   refreshLockModeUI();
   _showAuthMode(mode);
-  if(mode==='none'||authed==='1'){
-    if(mode==='none')localStorage.setItem(AUTH_KEY,'1');
+  // Auto-login: if this device (or any synced device) previously authenticated
+  // and the user hasn't explicitly logged out, skip the lock screen.
+  var remoteAuthed=localStorage.getItem('motion_auth_synced')==='1';
+  if(mode==='none'||authed==='1'||remoteAuthed){
+    if(mode==='none'||remoteAuthed)localStorage.setItem(AUTH_KEY,'1');
     var auth=document.getElementById('auth-screen');if(auth)auth.style.display='none';
     if(dash)dash.style.visibility='visible';
   } else {
