@@ -3782,7 +3782,7 @@ body.phone-mode .topbar { padding-top: calc(8px + 1.1cm) !important; }
     <div class="card gap-top reveal" id="journal-history-card">
       <div class="card-accent-line"></div>
       <div class="card-title" style="display:flex;align-items:center">All Trades
-        <span id="journal-count" style="font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-left:auto">0 entries</span>
+        <span id="journal-history-count" style="font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-left:auto">0 entries</span>
       </div>
       <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
         <button id="journal-edit-btn" onclick="toggleJournalEdit()" style="background:none;border:1px solid var(--border2);color:var(--text3);padding:5px 12px;border-radius:8px;font-family:var(--font-mono);font-size:9px;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s">&#x270E; Edit</button>
@@ -6899,7 +6899,7 @@ function buildROICards(){
   grid.innerHTML='';
   investments.forEach(function(inv){
     var rate=roiRates[inv.name]||inv.rate||12;
-    var isWickd=inv.name==='wickd';
+    var isWickd=!!inv.brand;
     var card=document.createElement('div');
     card.className='roi-card reveal';
     card.style.cursor='pointer';
@@ -8279,6 +8279,7 @@ function logTrade(){
   renderJournalSummary();
   // Reset direction buttons
   [document.getElementById('jnl-btn-long'),document.getElementById('jnl-btn-short'),document.getElementById('jnl-btn-be')].forEach(function(b){if(b){b.style.background='var(--surface2)';b.style.borderColor='var(--border2)';b.style.color='var(--text3)';}});
+  showToast('Trade logged');
   if(window._kvPush) window._kvPush();
 }
 let journalEditMode=false;
@@ -8442,6 +8443,7 @@ function saveTradeDetail(){
   trades[idx].lesson=document.getElementById('td-lesson').value.trim();
   localStorage.setItem('cmd_trade_journal',JSON.stringify(trades));
   renderTradeJournal();pnlRender();closeTradeDetail();
+  showToast('Trade updated');
   if(window._kvPush) window._kvPush();
 }
 
@@ -8473,9 +8475,12 @@ function deleteTrade(id){
 function renderTradeJournal(){
   const list=document.getElementById('trade-journal-list');
   const count=document.getElementById('journal-count');
+  const historyCount=document.getElementById('journal-history-count');
   if(!list) return;
   const trades=JSON.parse(localStorage.getItem('cmd_trade_journal')||'[]');
-  if(count) count.textContent=trades.length+' entr'+(trades.length===1?'y':'ies');
+  const countLabel=trades.length+' entr'+(trades.length===1?'y':'ies');
+  if(count) count.textContent=countLabel;
+  if(historyCount) historyCount.textContent=countLabel;
   var ptCount=document.getElementById('past-trades-count');if(ptCount)ptCount.textContent=trades.length;
   list.innerHTML='';
   if(!trades.length){
@@ -9632,24 +9637,36 @@ if(document.readyState==='loading'){
   safeInit();
 }
 
-// ── Swipe-left-edge to close account/settings page ──
+// ── Swipe-left-edge to close any settings panel (account / change passcode / change password / customize) ──
 (function(){
   var EDGE=32,THRESHOLD=72,RATIO=0.3;
-  var startX,startY,tracking=false,curX=0;
+  var startX,startY,tracking=false,curX=0,activePanel=null;
+  var SETTINGS_PANELS=[
+    {id:'account-page',close:function(){closeAccountPage();}},
+    {id:'change-pc-screen',close:function(){closeChangePasscode();}},
+    {id:'change-pw-screen',close:function(){closeChangePassword();}},
+    {id:'customize-page',close:function(){closeCustomizePage();}}
+  ];
   function getPanel(){
-    var p=document.getElementById('account-page');
-    return p&&p.classList.contains('open')?p:null;
+    for(var i=0;i<SETTINGS_PANELS.length;i++){
+      var p=document.getElementById(SETTINGS_PANELS[i].id);
+      if(p&&p.classList.contains('open')) return {el:p,close:SETTINGS_PANELS[i].close};
+    }
+    return null;
   }
   document.addEventListener('touchstart',function(e){
     if(window.innerWidth>600)return;
     var t=e.touches[0];
     if(t.clientX>EDGE)return;
-    if(!getPanel())return;
+    var panel=getPanel();if(!panel)return;
+    activePanel=panel;
     startX=t.clientX;startY=t.clientY;tracking=true;curX=0;
   },{passive:true});
   document.addEventListener('touchmove',function(e){
     if(!tracking)return;
-    var p=getPanel();if(!p){tracking=false;return;}
+    var panel=getPanel();if(!panel){tracking=false;return;}
+    activePanel=panel;
+    var p=panel.el;
     var t=e.touches[0];
     var dx=t.clientX-startX;
     var dy=Math.abs(t.clientY-startY);
@@ -9662,21 +9679,22 @@ if(document.readyState==='loading'){
   document.addEventListener('touchend',function(){
     if(!tracking){return;}
     tracking=false;
-    var p=getPanel();if(!p){curX=0;return;}
+    var panel=activePanel;if(!panel){curX=0;return;}
+    var p=panel.el;
     var vw=window.innerWidth;
     if(curX>THRESHOLD||curX/vw>RATIO){
       p.style.transition='transform 0.2s cubic-bezier(0.32,0.72,0,1)';
       p.style.transform='translateX('+vw+'px)';
       setTimeout(function(){
         p.style.transform='';p.style.transition='';
-        closeAccountPage();
+        panel.close();
       },200);
     } else {
       p.style.transition='transform 0.22s cubic-bezier(0.32,0.72,0,1)';
       p.style.transform='translateX(0)';
       setTimeout(function(){p.style.transition='';},220);
     }
-    curX=0;
+    curX=0;activePanel=null;
   });
 })();
 
@@ -11194,10 +11212,31 @@ window.closeMindset = function(){
   });
 })();
 
-// ---- Swipe-to-go-back on the Journal page (drag from left edge -> Daily) ----
+// ---- Swipe-to-go-back, generalized across every page (drag from left edge) ----
+// Each entry maps a view to where "back" goes. Views not listed (overview,
+// invest-detail, all — the latter two already have their own slide-over
+// handler above) simply don't respond to the gesture.
+var VIEW_BACK_MAP = {
+  'daily':'overview','mdp':'overview','scaling':'overview','invest':'overview',
+  'ideas':'overview','trophies':'overview','trash':'overview',
+  'journal':'daily','journal-history':'journal'
+};
+function getBackTargetForActiveView(){
+  var active = document.querySelector('.view.active');
+  if(!active) return null;
+  var id = active.id.replace('view-','');
+  var target = VIEW_BACK_MAP[id];
+  if(!target) return null;
+  return { el: active, id: id, target: target };
+}
+function isSettingsPanelOpen(){
+  return ['account-page','change-pc-screen','change-pw-screen','customize-page'].some(function(pid){
+    var el=document.getElementById(pid);
+    return el&&el.classList.contains('open');
+  });
+}
 (function(){
-  const view = document.getElementById('view-journal');
-  if(!view) return;
+  let view = null, backTarget = null;
   let startX = 0, startY = 0, dx = 0, dy = 0, dragging = false, decided = false, isHorizontal = false, gestureLive = false;
   const SWIPE_CLOSE_THRESHOLD = 0.28;
   const SWIPE_VELOCITY_THRESHOLD = 0.5;
@@ -11206,10 +11245,14 @@ window.closeMindset = function(){
 
   document.addEventListener('touchstart', (e)=>{
     gestureLive = false;
-    if(!view.classList.contains('active')) return;
     var tapeM=document.getElementById('tapeModal'), mindM=document.getElementById('mindsetModal');
     if((tapeM&&tapeM.classList.contains('open'))||(mindM&&mindM.classList.contains('open'))) return;
+    if(isSettingsPanelOpen()) return;
+    var info = getBackTargetForActiveView();
+    if(!info) return;
     const t = e.touches[0];
+    if(t.clientX > EDGE_ZONE) return;
+    view = info.el; backTarget = info.target;
     startX = t.clientX; startY = t.clientY;
     lastX = startX; lastT = Date.now();
     dx = 0; dy = 0; dragging = false; decided = false; isHorizontal = false; velocity = 0;
@@ -11217,7 +11260,7 @@ window.closeMindset = function(){
   }, {passive:true});
 
   document.addEventListener('touchmove', (e)=>{
-    if(!gestureLive) return;
+    if(!gestureLive || !view) return;
     const t = e.touches[0];
     dx = t.clientX - startX;
     dy = t.clientY - startY;
@@ -11225,7 +11268,7 @@ window.closeMindset = function(){
     if(!decided){
       if(Math.abs(dx) > 8 || Math.abs(dy) > 8){
         decided = true;
-        isHorizontal = startX <= EDGE_ZONE && Math.abs(dx) > Math.abs(dy) && dx > 0;
+        isHorizontal = Math.abs(dx) > Math.abs(dy) && dx > 0;
         if(isHorizontal) dragging = true;
       }
     }
@@ -11246,35 +11289,74 @@ window.closeMindset = function(){
   document.addEventListener('touchend', ()=>{
     if(!gestureLive){ dragging = false; decided = false; return; }
     gestureLive = false;
-    if(!dragging){ decided = false; return; }
+    if(!dragging || !view){ dragging = false; decided = false; return; }
     const w = window.innerWidth;
     const shouldGoBack = dx > w * SWIPE_CLOSE_THRESHOLD || velocity > SWIPE_VELOCITY_THRESHOLD;
+    const v = view, target = backTarget;
     if(shouldGoBack){
-      view.style.transition = 'transform 0.3s cubic-bezier(0.16,1,0.3,1)';
-      view.style.transform = `translateX(${w}px)`;
+      v.style.transition = 'transform 0.3s cubic-bezier(0.16,1,0.3,1)';
+      v.style.transform = `translateX(${w}px)`;
       setTimeout(()=>{
-        switchView('daily', document.getElementById('nb-daily'));
-        view.style.transition = '';
-        view.style.transform = '';
+        switchView(target);
+        v.style.transition = '';
+        v.style.transform = '';
       }, 300);
     } else {
-      view.style.transition = 'transform 0.3s cubic-bezier(0.16,1,0.3,1)';
-      view.style.transform = '';
-      setTimeout(()=>{ view.style.transition = ''; }, 320);
+      v.style.transition = 'transform 0.3s cubic-bezier(0.16,1,0.3,1)';
+      v.style.transform = '';
+      setTimeout(()=>{ v.style.transition = ''; }, 320);
     }
-    dragging = false; decided = false; dx = 0; dy = 0;
+    dragging = false; decided = false; dx = 0; dy = 0; view = null;
   });
 
   document.addEventListener('touchcancel', ()=>{
     if(!gestureLive){ dragging = false; decided = false; return; }
     gestureLive = false;
-    if(dragging){
+    if(dragging && view){
       view.style.transition = 'transform 0.3s cubic-bezier(0.16,1,0.3,1)';
       view.style.transform = '';
       setTimeout(()=>{ view.style.transition = ''; }, 320);
     }
-    dragging = false; decided = false;
+    dragging = false; decided = false; view = null;
   });
+})();
+
+// ---- Two-finger trackpad swipe = same back navigation (macOS/desktop) ----
+// Trackpads report as wheel events, not touch events, so this is separate
+// from the handler above. Chrome honors preventDefault on this reliably;
+// Safari's own swipe-to-navigate is a lower-level OS gesture that can't
+// always be overridden from JS, so this may feel less consistent there.
+(function(){
+  let accumX = 0, accumY = 0, resetTimer = null, cooldown = false;
+  const TRIGGER_PX = 70;
+  const DOMINANCE_RATIO = 1.8;
+
+  window.addEventListener('wheel', function(e){
+    if(e.ctrlKey) return; // pinch-zoom gesture, leave alone
+    if(cooldown) return;
+    var tapeM=document.getElementById('tapeModal'), mindM=document.getElementById('mindsetModal');
+    if((tapeM&&tapeM.classList.contains('open'))||(mindM&&mindM.classList.contains('open'))) return;
+    if(isSettingsPanelOpen()) return;
+    // Don't hijack genuinely horizontal-scrolling content
+    var t = e.target;
+    if(t && t.closest && (t.closest('#tapeRail') || t.closest('.lux-table') || t.closest('#tapeModal') || t.closest('#mindsetModal'))) return;
+
+    accumX += e.deltaX;
+    accumY += e.deltaY;
+    clearTimeout(resetTimer);
+    resetTimer = setTimeout(function(){ accumX = 0; accumY = 0; }, 200);
+
+    const absX = Math.abs(accumX), absY = Math.abs(accumY);
+    if(absX > TRIGGER_PX && absX > absY * DOMINANCE_RATIO){
+      var info = getBackTargetForActiveView();
+      if(info){
+        cooldown = true;
+        accumX = 0; accumY = 0;
+        switchView(info.target);
+        setTimeout(function(){ cooldown = false; }, 700);
+      }
+    }
+  }, {passive:true});
 })();
 </script>
 </body>
