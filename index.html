@@ -2181,6 +2181,7 @@ body.light-mode { background: var(--void); }
 .pc-dot.error{border-color:var(--rose);background:var(--rose)}
 @keyframes pc-shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-8px)}30%{transform:translateX(8px)}45%{transform:translateX(-6px)}60%{transform:translateX(6px)}75%{transform:translateX(-3px)}90%{transform:translateX(3px)}}
 .pc-dots-shake{animation:pc-shake .5s cubic-bezier(0.36,0.07,0.19,0.97)}
+.pw-shake{animation:pc-shake .5s cubic-bezier(0.36,0.07,0.19,0.97)}
 /* Ripple on keypad tap */
 .pc-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.25);transform:scale(0);animation:pc-ripple-anim .4s var(--ease-silk) forwards;pointer-events:none}
 @keyframes pc-ripple-anim{to{transform:scale(2.8);opacity:0}}
@@ -2884,6 +2885,10 @@ body.phone-mode .topbar { padding-top: calc(8px + 1.1cm) !important; }
         style="width:100%;padding:18px 20px;border-radius:14px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-family:var(--font-mono);font-size:16px;letter-spacing:4px;text-align:center;outline:none;-webkit-appearance:none;box-sizing:border-box;transition:border-color .2s"
         onkeydown="if(event.key==='Enter')pwAuthSubmit()"/>
       <button onclick="pwAuthSubmit()" style="width:100%;padding:18px;border-radius:14px;background:var(--gold-dim);border:1.5px solid var(--gold);color:var(--gold);font-family:var(--font-mono);font-size:11px;letter-spacing:4px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:all .2s">ENTER</button>
+      <button id="pw-bio-btn" onclick="pwBiometric()" style="display:none;width:100%;padding:14px;border-radius:14px;background:none;border:1px solid var(--border2);color:var(--text2);font-family:var(--font-mono);font-size:10px;letter-spacing:2px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:all .2s;align-items:center;justify-content:center;gap:8px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a5 5 0 0 1 5 5v3"/><path d="M7 7a5 5 0 0 1 10 0"/><path d="M3 12c0-4.97 4.03-9 9-9"/><path d="M21 12c0 4.97-4.03 9-9 9"/><path d="M12 12v.01"/><path d="M9 15a3 3 0 0 0 6 0v-3"/><path d="M12 7v5"/></svg>
+        USE TOUCH ID
+      </button>
       <div id="pw-auth-error" style="display:none;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--rose);text-align:center;margin-top:4px">INCORRECT PASSWORD</div>
     </div>
     <!-- Bottom spacer + footer -->
@@ -2981,6 +2986,11 @@ body.phone-mode .topbar { padding-top: calc(8px + 1.1cm) !important; }
           <button class="acct-row" id="acct-change-pw-btn" onclick="showChangePassword()" style="display:none">
             <span class="acct-row-label">Change Password</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <div class="acct-divider" id="acct-touchid-divider" style="display:none"></div>
+          <button class="acct-row" id="acct-touchid-btn" onclick="toggleTouchIdForPassword()" style="display:none">
+            <span class="acct-row-label">Touch ID Unlock</span>
+            <span class="acct-toggle" id="acct-touchid-toggle"></span>
           </button>
         </div>
       </div>
@@ -4857,6 +4867,7 @@ function savePlan(){
     });
   }
   localStorage.setItem('cmd_plans',JSON.stringify(plans));stampSection('plans');
+  showToast(editId?'Plan updated':'Plan saved');
   clearPlanForm();
   toggleCreatePlan(false);
   var ideasForm=document.getElementById('ideas-plan-form');
@@ -4944,6 +4955,7 @@ function deletePlan(id,e){
   if(window._tomb){window._tomb('cmd_plans',id);window._untomb('cmd_trash_plans',id);}
   plans=plans.filter(function(p){return p.id!==id;});
   localStorage.setItem('cmd_plans',JSON.stringify(plans));
+  showToast('Plan deleted');
   renderPlans();
   if(window._kvPush) window._kvPush();
 }
@@ -5532,6 +5544,7 @@ function saveWeeklyReview(){
   renderWeeklyReviews();
   renderWeeklyReviewStats();
   renderJournalSummary();
+  showToast('Weekly review saved');
   if(window._kvPush) window._kvPush();
 }
 function deleteWeeklyReview(id){
@@ -5553,6 +5566,7 @@ function deleteWeeklyReview(id){
   renderWeeklyReviews();
   renderJournalSummary();
   if(typeof renderIdeasTrash==='function') renderIdeasTrash();
+  showToast('Review deleted');
   if(window._kvPush) window._kvPush();
 }
 function restoreWeeklyReview(id){
@@ -5581,6 +5595,7 @@ function permDeleteWeeklyReview(id){
   trash=trash.filter(function(r){return r.id!==id;});
   localStorage.setItem('cmd_trash_weekly_reviews',JSON.stringify(trash));
   if(window._tomb) window._tomb('cmd_trash_weekly_reviews',id);
+  showToast('Review permanently deleted');
   if(window._kvPush) window._kvPush();
 }
 var _wrEditingId=null;
@@ -5600,6 +5615,7 @@ function saveEditWeeklyReview(id){
     r.didnt=d?d.value.trim():r.didnt;
     r.focus=f?f.value.trim():r.focus;
     localStorage.setItem('cmd_weekly_reviews',JSON.stringify(reviews));
+    showToast('Review updated');
     if(window._kvPush) window._kvPush();
   }
   _wrEditingId=null;
@@ -6112,12 +6128,14 @@ function permDeleteNote(id){
     trashedNotes.splice(id, 1);
     saveTrash();
     renderTrash();
+    showToast('Note permanently deleted');
     return;
   }
   if(window._tomb) window._tomb('cmd_trash_notes',id);
   trashedNotes = trashedNotes.filter(function(n){ return n.id !== id; });
   saveTrash();
   renderTrash();
+  showToast('Note permanently deleted');
   renderIdeasTrash();
 }
 function restorePlan(id){
@@ -6141,12 +6159,14 @@ function permDeletePlan(id){
     trashedPlans.splice(id, 1);
     saveTrash();
     renderTrash();
+    showToast('Plan permanently deleted');
     return;
   }
   if(window._tomb) window._tomb('cmd_trash_plans',id);
   trashedPlans = trashedPlans.filter(function(p){ return p.id !== id; });
   saveTrash();
   renderTrash();
+  showToast('Plan permanently deleted');
   renderIdeasTrash();
 }
 
@@ -6325,6 +6345,7 @@ function setMonthlyGoal(){
     document.getElementById('monthly-goal-input').value='';
     const p=document.getElementById('monthly-income-editor');
     if(p){p.classList.remove('editor-open');}
+    showToast('Monthly target set to $'+Math.round(v).toLocaleString('en-US'));
     if(window._kvPush) window._kvPush();
   }
 }
@@ -6800,11 +6821,13 @@ function mvToggleHide(){
   var sel=document.getElementById('mv-select');if(!sel)return;
   var name=sel.value;
   var idx=investHidden.indexOf(name);
-  if(idx>-1) investHidden.splice(idx,1); else investHidden.push(name);
+  var wasHidden=idx>-1;
+  if(wasHidden) investHidden.splice(idx,1); else investHidden.push(name);
   localStorage.setItem('cmd_invest_hidden',JSON.stringify(investHidden));
   investments=buildInvestmentsList();
   mvPopulateSelect();mvRenderHiddenList();
   buildROICards();updatePortfolioSummary();try{renderHomeInvestTable();}catch(e){}
+  showToast(wasHidden?'Venture unhidden':'Venture hidden');
   if(window._kvPush)window._kvPush();
 }
 // Permanently removes a venture the user added (built-in ventures can only
@@ -6983,6 +7006,7 @@ function applyInvestAmount(nameOverride,valOverride){
     var wrap=document.getElementById('amount-editor-wrap');if(wrap)wrap.style.display='none';
     openInvestDetail(inv);buildROICards();updatePortfolioSummary();
   }
+  showToast('Investment amount updated');
   if(window._kvPush) window._kvPush();
 }
 function addSaved(){ /* removed */ }
@@ -7010,6 +7034,7 @@ function addReturn(){
     updateDetailChart();
     var inv=activeInvestment;
     if(inv) buildSavedTracker(inv,0);
+    showToast('Return logged');
     if(window._kvPush) window._kvPush();
   }
   if(inp) inp.value='';
@@ -7464,6 +7489,7 @@ function saveNote(){
   const title=(document.getElementById('note-title-input')&&document.getElementById('note-title-input').value||'').trim();
   const body=(document.getElementById('note-body-input')&&document.getElementById('note-body-input').value||'').trim();
   if(!title&&!body){if(activeNote)deleteNoteById(activeNote.id);closeNote();return;}
+  const isEdit=!!activeNote;
   if(activeNote){
     const n=notes.find(function(x){return x.id===activeNote.id;});
     if(n){n.title=title;n.body=body;n.attachments=pendingAttachments;n.updated=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
@@ -7471,6 +7497,7 @@ function saveNote(){
     notes.push({id:Date.now(),title:title,body:body,attachments:pendingAttachments,date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})});
   }
   localStorage.setItem('cmd_notes',JSON.stringify(notes));stampSection('notes');
+  showToast(isEdit?'Note updated':'Note saved');
   closeNote();renderNotes();
   if(window._kvPush) window._kvPush();
 }
@@ -7491,6 +7518,7 @@ function deleteNoteById(id){
   if(window._tomb){window._tomb('cmd_notes',id);window._untomb('cmd_trash_notes',id);}
   notes=notes.filter(function(n){return n.id!==id;});
   localStorage.setItem('cmd_notes',JSON.stringify(notes));stampSection('notes');
+  showToast('Note deleted');
   renderNotes();
   if(window._kvPush) window._kvPush();
 }
@@ -7580,7 +7608,7 @@ function renderTrash(){
 }
 function recoverPlan(i){const p=trashedPlans[i];if(p)restorePlan(p.id);}
 function recoverNote(i){const n=trashedNotes[i];if(n)restoreNote(n.id);}
-function clearAllTrash(){trashedPlans=[];trashedNotes=[];saveTrash();renderTrash();}
+function clearAllTrash(){trashedPlans=[];trashedNotes=[];saveTrash();renderTrash();showToast('Trash emptied');}
 // ════════════════ THEME ════════════════
 function toggleTheme(){
   // Theme is now system-controlled — no manual toggle
@@ -8453,6 +8481,7 @@ function deleteTradeFromDetail(){
   var trades=JSON.parse(localStorage.getItem('cmd_trade_journal')||'[]');
   localStorage.setItem('cmd_trade_journal',JSON.stringify(trades.filter(function(x){return x.id!==_tdTradeId;})));
   renderTradeJournal();pnlRender();closeTradeDetail();
+  showToast('Trade deleted');
   if(window._kvPush) window._kvPush();
 }
 
@@ -8469,6 +8498,7 @@ function deleteTrade(id){
   const filtered=trades.filter(function(t){return t.id!==id;});
   localStorage.setItem('cmd_trade_journal',JSON.stringify(filtered));
   renderTradeJournal();
+  showToast('Trade deleted');
   if(window._kvPush) window._kvPush();
 }
 
@@ -8637,6 +8667,7 @@ function logTrophy(){
   renderTrophies();
   updateMonthlyDisplay();
   fireConfetti();
+  showToast('Payout logged');
   try{renderHomeTradingBar();renderEquityCurve();pnlRender();}catch(e){}
   if(window._kvPush) window._kvPush();
 }
@@ -8654,6 +8685,7 @@ function deleteTrophy(id){
   localStorage.setItem('cmd_trophies',JSON.stringify(trophies));
   renderTrophies();
   updateMonthlyDisplay();
+  showToast('Payout deleted');
   if(window._kvPush) window._kvPush();
 }
 var MS_TIERS=[1000,2500,5000,10000,25000,50000,100000];
@@ -9177,6 +9209,7 @@ function saveMonthEdit(){
   updateDetailChart();
   if(activeInvestment) buildSavedTracker(activeInvestment,0);
   closeMonthEdit();
+  showToast('Month updated');
   if(window._kvPush) window._kvPush();
 }
 function applyChartInputs(){ saveMonthEdit(); }
@@ -9258,16 +9291,19 @@ function _showAuthMode(mode){
   var pcView=document.getElementById('pc-keypad');
   var pwView=document.getElementById('pw-auth-view');
   var bioBtn=document.getElementById('pc-bio-btn');
+  var pwBioBtn=document.getElementById('pw-bio-btn');
   if(mode==='password'){
     if(pcWrap)pcWrap.style.display='none';
     if(pcView)pcView.style.display='none';
     if(pwView){pwView.style.display='flex';setTimeout(function(){var i=document.getElementById('pw-auth-input');if(i)i.focus();},300);}
     if(bioBtn)bioBtn.style.visibility='hidden';
+    if(pwBioBtn)pwBioBtn.style.display=localStorage.getItem('motion_bio_cred_id')?'flex':'none';
   } else {
     if(pcWrap)pcWrap.style.display='flex';
     if(pcView)pcView.style.display='block';
     if(pwView)pwView.style.display='none';
     if(bioBtn)bioBtn.style.visibility=(mode==='biometric')?'visible':'hidden';
+    if(pwBioBtn)pwBioBtn.style.display='none';
   }
 }
 
@@ -9334,15 +9370,30 @@ function pwAuthSubmit(){
   var val=inp.value;
   if(val===_pwGetPass()){
     inp.value='';
-    localStorage.setItem(AUTH_KEY,'1');
     showApp();
   } else {
     inp.value='';
-    inp.style.borderColor='var(--rose)';
-    setTimeout(function(){if(inp)inp.style.borderColor='';},1200);
+    pwShake();
     var err=document.getElementById('pw-auth-error');
     if(err){err.style.display='block';setTimeout(function(){err.style.display='none';},1800);}
   }
+}
+function pwShake(){
+  var inp=document.getElementById('pw-auth-input');
+  if(!inp)return;
+  inp.classList.remove('pw-shake');
+  void inp.offsetWidth;
+  inp.classList.add('pw-shake');
+  inp.style.borderColor='var(--rose)';
+  setTimeout(function(){
+    inp.classList.remove('pw-shake');
+    if(inp)inp.style.borderColor='';
+  },550);
+}
+function pwBiometric(){
+  _bioVerify(function(ok){
+    if(ok) showApp();
+  });
 }
 
 var _cpcStep=0;
@@ -9515,6 +9566,43 @@ function refreshLockModeUI(){
   if(pwDiv)pwDiv.style.display=(mode==='password')?'block':'none';
   var b=document.getElementById('pc-bio-btn');
   if(b)b.style.visibility=(mode==='biometric')?'visible':'hidden';
+  var tidDiv=document.getElementById('acct-touchid-divider');
+  var tidBtn=document.getElementById('acct-touchid-btn');
+  if(mode==='password'){
+    _bioAvailable(function(ok){
+      if(tidDiv)tidDiv.style.display=ok?'block':'none';
+      if(tidBtn)tidBtn.style.display=ok?'flex':'none';
+      refreshTouchIdUI();
+    });
+  } else {
+    if(tidDiv)tidDiv.style.display='none';
+    if(tidBtn)tidBtn.style.display='none';
+  }
+}
+function refreshTouchIdUI(){
+  var hasCred=!!localStorage.getItem('motion_bio_cred_id');
+  var toggle=document.getElementById('acct-touchid-toggle');
+  if(toggle)toggle.classList.toggle('on',hasCred);
+}
+function toggleTouchIdForPassword(){
+  var hasCred=!!localStorage.getItem('motion_bio_cred_id');
+  if(hasCred){
+    localStorage.removeItem('motion_bio_cred_id');
+    refreshTouchIdUI();
+    _showAuthMode(_getLockMode());
+    showToast('Touch ID unlock turned off');
+    if(window._kvPush) window._kvPush();
+  } else {
+    _bioRegister(function(ok){
+      if(ok){
+        showToast('Touch ID enabled');
+      } else {
+        showToast('Could not set up Touch ID');
+      }
+      refreshTouchIdUI();
+      _showAuthMode(_getLockMode());
+    });
+  }
 }
 function updateBioUI(){refreshLockModeUI();}
 
@@ -9561,8 +9649,9 @@ function closeCustomizePage(){
 function showApp(){
   _pcBuffer='';pcRenderDots('pcd-',0);
   var inp=document.getElementById('pw-auth-input');if(inp)inp.value='';
-  // Persist auth state so other devices auto-login
-  localStorage.setItem('motion_auth_synced','1');
+  // Authenticated for today — syncs across devices so unlocking anywhere
+  // covers the rest of today everywhere, but resets at midnight.
+  localStorage.setItem('motion_auth_date', new Date().toDateString());
   if(window._kvPush) window._kvPush();
   var auth=document.getElementById('auth-screen');
   if(auth){auth.style.opacity='0';auth.style.transition='opacity .4s ease';setTimeout(function(){auth.style.display='none';auth.style.opacity='';auth.style.transition='';},400);}
@@ -9576,7 +9665,7 @@ function showApp(){
 }
 function hideApp(){
   var mode=_getLockMode();
-  if(mode==='none'){localStorage.setItem(AUTH_KEY,'1');return;}
+  if(mode==='none'){localStorage.setItem('motion_auth_date', new Date().toDateString());return;}
   var auth=document.getElementById('auth-screen');
   if(auth)auth.style.display='flex';
   document.body.style.overflow='hidden';
@@ -9588,6 +9677,7 @@ function hideApp(){
 }
 function logOut(){
   closeAccountPage();
+  localStorage.removeItem('motion_auth_date');
   localStorage.removeItem(AUTH_KEY);
   localStorage.removeItem('motion_auth');
   localStorage.removeItem('motion_auth_synced');
@@ -9595,18 +9685,18 @@ function logOut(){
   hideApp();
 }
 function initAuth(){
-  var authed=localStorage.getItem(AUTH_KEY);
   var dash=document.querySelector('.dashboard');
   var mode=_getLockMode();
   if(!localStorage.getItem(PC_KEY))localStorage.setItem(PC_KEY,DEFAULT_PASSCODE);
   if(!localStorage.getItem(PW_KEY))localStorage.setItem(PW_KEY,DEFAULT_PASSWORD);
   refreshLockModeUI();
   _showAuthMode(mode);
-  // Auto-login: if this device (or any synced device) previously authenticated
-  // and the user hasn't explicitly logged out, skip the lock screen.
-  var remoteAuthed=localStorage.getItem('motion_auth_synced')==='1';
-  if(mode==='none'||authed==='1'||remoteAuthed){
-    if(mode==='none'||remoteAuthed)localStorage.setItem(AUTH_KEY,'1');
+  // Authenticated once already unlocks the rest of THAT day — on any synced
+  // device — then locks again on the first open of a new day.
+  var today=new Date().toDateString();
+  var authedToday=localStorage.getItem('motion_auth_date')===today;
+  if(mode==='none'||authedToday){
+    if(mode==='none')localStorage.setItem('motion_auth_date',today);
     var auth=document.getElementById('auth-screen');if(auth)auth.style.display='none';
     if(dash)dash.style.visibility='visible';
   } else {
